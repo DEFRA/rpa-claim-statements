@@ -1,0 +1,55 @@
+﻿@model List<RPA.ClaimStatements.Generator.Models.Entities.CS.SchemeYear>
+
+@{
+    ViewBag.Title = "Configuration";
+}
+
+<h2>Generation Active Scheme Years</h2>
+
+@using (Html.BeginForm())
+{
+    <table class="table table-hover table-condensed">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model[0].SchemeYearNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Active)
+            </th>
+            <th></th>
+        </tr>
+
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model[i].SchemeYearNumber)
+                </td>
+                <td>
+                    @Html.CheckBoxFor(modelItem => Model[i].Active)
+                </td>
+            </tr>
+
+            @Html.HiddenFor(modelItem => Model[i].SchemeYearID)
+            @Html.HiddenFor(modelItem => Model[i].SchemeYearNumber)
+        }
+
+    </table>
+
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-12">
+            <button class="btn btn-primary">Save Changes</button>
+        </div>
+    </div>
+
+    if (TempData["Message"] != null)
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="alert alert-success">
+                    <p>@TempData["Message"]</p>
+                </div>
+            </div>
+        </div>
+    }
+}

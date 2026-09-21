@@ -1,0 +1,481 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E82585AA-7CAB-4B5A-9B28-A766250D502F}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RPA.ClaimStatements.Generator</RootNamespace>
+    <AssemblyName>RPA.ClaimStatements.Generator</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <OutputPath>bin\Test\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SIT|AnyCPU'">
+    <OutputPath>bin\SIT\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\Production\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UAT|AnyCPU'">
+    <OutputPath>bin\UAT\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\CommonServiceLocator.dll</HintPath>
+    </Reference>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.1.0.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="FastMember, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FastMember.1.1.0\lib\net40\FastMember.dll</HintPath>
+    </Reference>
+    <Reference Include="FizzWare.NBuilder, Version=4.0.0.115, Culture=neutral, PublicKeyToken=5651b03e12e42c12, processorArchitecture=MSIL">
+      <HintPath>..\packages\NBuilder.4.0.0\lib\net40\FizzWare.NBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="NReco.PdfGenerator, Version=1.1.15.0, Culture=neutral, PublicKeyToken=231663d50a41b451, processorArchitecture=MSIL">
+      <HintPath>..\packages\NReco.PdfGenerator.1.1.15\lib\net20\NReco.PdfGenerator.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenXmlPowerTools, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenXmlPowerTools.4.5.3.2\lib\net45\OpenXmlPowerTools.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Management.Automation.dll.10.0.10586.0\lib\net40\System.Management.Automation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Unity.Abstractions, Version=3.1.3.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\Unity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Configuration, Version=5.1.3.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Container, Version=5.5.6.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\Unity.Container.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Interception, Version=5.3.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Interception.Configuration, Version=5.1.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\Unity.Interception.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RegistrationByConvention, Version=2.1.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\Unity.RegistrationByConvention.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ServiceLocation, Version=2.1.0.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.5.5.6\lib\net45\Unity.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WinSCPnet, Version=1.3.7.7601, Culture=neutral, PublicKeyToken=2271ec4a3c56d0bf, processorArchitecture=MSIL">
+      <HintPath>..\packages\WinSCP.5.9.6\lib\WinSCPnet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Components\FuelTank\FuelTank.cs" />
+    <Compile Include="Components\FuelTank\IFuelTank.cs" />
+    <Compile Include="Components\IPowerPlant.cs" />
+    <Compile Include="Components\PumpingStation\BulkInsert\ISITIBulkInsertContainer.cs" />
+    <Compile Include="Components\PumpingStation\IAPImportService.cs" />
+    <Compile Include="Components\PumpingStation\IARImportService.cs" />
+    <Compile Include="Components\PumpingStation\IPumpingStation.cs" />
+    <Compile Include="Components\PumpingStation\ISITIImportService.cs" />
+    <Compile Include="Components\PumpingStation\IXBImportService.cs" />
+    <Compile Include="Components\PumpingStation\Maps\PRSQLMap.cs" />
+    <Compile Include="Components\TrackingStation\ITrackingStation.cs" />
+    <Compile Include="Components\TrackingStation\TrackingStation.cs" />
+    <Compile Include="Components\Turbine\ITurbine.cs" />
+    <Compile Include="Components\PowerPlant.cs" />
+    <Compile Include="Components\PumpingStation\PumpingStation.cs" />
+    <Compile Include="Components\PumpingStation\BulkInsert\SITIBulkInsertContainer.cs" />
+    <Compile Include="Components\Turbine\Turbine.cs" />
+    <Compile Include="Context\ClaimStatementContext.cs" />
+    <Compile Include="Context\IClaimStatementsContext.cs" />
+    <Compile Include="Extensions\EntityFramework.cs" />
+    <Compile Include="Components\PumpingStation\FTPService.cs" />
+    <Compile Include="Components\PumpingStation\IFTPService.cs" />
+    <Compile Include="Components\PumpingStation\Maps\BPSPENSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\BPSSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\ClaimSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\CLDSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\GRPENSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\GRSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\SUM2SQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\SUMSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\XBDataSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\XBSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\YFSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\SITIImportService.cs" />
+    <Compile Include="Components\PumpingStation\Serializer\SITISerializer.cs" />
+    <Compile Include="Components\PumpingStation\XBImportService.cs" />
+    <Compile Include="Migrations\201802271513336_Initial.cs" />
+    <Compile Include="Migrations\201802271513336_Initial.Designer.cs">
+      <DependentUpon>201802271513336_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809131222173_newXBfields.cs" />
+    <Compile Include="Migrations\201809131222173_newXBfields.Designer.cs">
+      <DependentUpon>201809131222173_newXBfields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809281014597_Statment3yrPenaltyNewFields.cs" />
+    <Compile Include="Migrations\201809281014597_Statment3yrPenaltyNewFields.Designer.cs">
+      <DependentUpon>201809281014597_Statment3yrPenaltyNewFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810081307238_EFAonXB.cs" />
+    <Compile Include="Migrations\201810081307238_EFAonXB.Designer.cs">
+      <DependentUpon>201810081307238_EFAonXB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810241520516_addedPrecision.cs" />
+    <Compile Include="Migrations\201810241520516_addedPrecision.Designer.cs">
+      <DependentUpon>201810241520516_addedPrecision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811071553482_enitlmentsused4DP.cs" />
+    <Compile Include="Migrations\201811071553482_enitlmentsused4DP.Designer.cs">
+      <DependentUpon>201811071553482_enitlmentsused4DP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202009301028205_latechargepenaltyvalue.cs" />
+    <Compile Include="Migrations\202009301028205_latechargepenaltyvalue.Designer.cs">
+      <DependentUpon>202009301028205_latechargepenaltyvalue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202010071329426_chargeToChange.cs" />
+    <Compile Include="Migrations\202010071329426_chargeToChange.Designer.cs">
+      <DependentUpon>202010071329426_chargeToChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202012141337511_EnglandLatePenaltyChargeAdded.cs" />
+    <Compile Include="Migrations\202012141337511_EnglandLatePenaltyChargeAdded.Designer.cs">
+      <DependentUpon>202012141337511_EnglandLatePenaltyChargeAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202108040919024_addPRTable.cs" />
+    <Compile Include="Migrations\202108040919024_addPRTable.Designer.cs">
+      <DependentUpon>202108040919024_addPRTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\ClaimStatements\ProgressiveReductionsReduction.cs" />
+    <Compile Include="Models\ClaimStatements\Rate.cs" />
+    <Compile Include="Models\Entities\CS\Configuration.cs" />
+    <Compile Include="Models\Entities\CS\ConversionRate.cs" />
+    <Compile Include="Models\Entities\CS\Error.cs" />
+    <Compile Include="Models\Entities\CS\Folder.cs" />
+    <Compile Include="Models\Entities\CS\Log.cs" />
+    <Compile Include="Models\Entities\CS\Monitor.cs" />
+    <Compile Include="Models\Entities\CS\MonitorProcess.cs" />
+    <Compile Include="Models\Entities\CS\SchemeCode.cs" />
+    <Compile Include="Models\Entities\CS\SchemeYear.cs" />
+    <Compile Include="Models\Entities\CS\Suppression.cs" />
+    <Compile Include="Models\Entities\CS\Transformation.cs" />
+    <Compile Include="Models\Entities\DAX\AP.cs" />
+    <Compile Include="Models\Entities\DAX\AR.cs" />
+    <Compile Include="Models\Entities\FDMR\Extract.cs" />
+    <Compile Include="Models\Entities\SITI\BPS.cs" />
+    <Compile Include="Models\Entities\SITI\BPSPEN.cs" />
+    <Compile Include="Models\Entities\SITI\Claim.cs" />
+    <Compile Include="Models\Entities\SITI\CLD.cs" />
+    <Compile Include="Models\Entities\SITI\GR.cs" />
+    <Compile Include="Models\Entities\SITI\GRPEN.cs" />
+    <Compile Include="Models\Entities\SITI\PR.cs" />
+    <Compile Include="Models\Entities\SITI\SUM.cs" />
+    <Compile Include="Models\Entities\SITI\SUM2.cs" />
+    <Compile Include="Models\Entities\SITI\YF.cs" />
+    <Compile Include="Models\Entities\XB\XB.cs" />
+    <Compile Include="Models\Entities\XB\XBData.cs" />
+    <Compile Include="Models\Enums\PaymentType.cs" />
+    <Compile Include="Components\Turbine\BuildService.cs" />
+    <Compile Include="Components\Turbine\IBuildService.cs" />
+    <Compile Include="Services\IMonitorService.cs" />
+    <Compile Include="Services\ISampleService.cs" />
+    <Compile Include="Services\ISampleXBService.cs" />
+    <Compile Include="Services\IYCPService.cs" />
+    <Compile Include="Services\MonitorService.cs" />
+    <Compile Include="Services\SampleService.cs" />
+    <Compile Include="Services\SampleXBService.cs" />
+    <Compile Include="Services\YCPService.cs" />
+    <Compile Include="Utilities\APComparer.cs" />
+    <Compile Include="Components\PumpingStation\APImportService.cs" />
+    <Compile Include="Components\PumpingStation\BulkInsert\IBulkInsert.cs" />
+    <Compile Include="Components\PumpingStation\Serializer\ISerializer.cs" />
+    <Compile Include="Components\PumpingStation\Maps\APFileMap.cs" />
+    <Compile Include="Components\PumpingStation\Maps\APSQLMap.cs" />
+    <Compile Include="Components\PumpingStation\BulkInsert\SQLBulkInsert.cs" />
+    <Compile Include="Models\ClaimStatements\BPSPayment.cs" />
+    <Compile Include="Models\ClaimStatements\ClaimStatement.cs" />
+    <Compile Include="Models\ClaimStatements\ClaimStatementXB.cs" />
+    <Compile Include="Models\ClaimStatements\GreeningPayment.cs" />
+    <Compile Include="Models\ClaimStatements\Invoice.cs" />
+    <Compile Include="Models\ClaimStatements\NIBPSPayment.cs" />
+    <Compile Include="Models\ClaimStatements\NIGreeningPayment.cs" />
+    <Compile Include="Models\ClaimStatements\NIYoungFarmerPayment.cs" />
+    <Compile Include="Models\ClaimStatements\PartA.cs" />
+    <Compile Include="Models\ClaimStatements\PartAXB.cs" />
+    <Compile Include="Models\ClaimStatements\PartB.cs" />
+    <Compile Include="Models\ClaimStatements\PartBXB.cs" />
+    <Compile Include="Models\ClaimStatements\PartC.cs" />
+    <Compile Include="Models\ClaimStatements\PartD.cs" />
+    <Compile Include="Models\ClaimStatements\PartDXB.cs" />
+    <Compile Include="Models\ClaimStatements\ScotlandBPSPayment.cs" />
+    <Compile Include="Models\ClaimStatements\ScotlandGreeningPayment.cs" />
+    <Compile Include="Models\ClaimStatements\ScotlandYoungFarmerPayment.cs" />
+    <Compile Include="Models\ClaimStatements\Summary.cs" />
+    <Compile Include="Models\ClaimStatements\WalesBPSPayment.cs" />
+    <Compile Include="Models\ClaimStatements\WalesGreeningPayment.cs" />
+    <Compile Include="Models\ClaimStatements\WalesRedistributivePayment.cs" />
+    <Compile Include="Models\ClaimStatements\WalesYoungFarmerPayment.cs" />
+    <Compile Include="Models\ClaimStatements\YoungFarmerPayment.cs" />
+    <Compile Include="Models\Exceptions\ClaimStatementGenerationException.cs" />
+    <Compile Include="Models\Exceptions\ClaimStatementValidationException.cs" />
+    <Compile Include="Models\Generation\ARGroup.cs" />
+    <Compile Include="Models\Generation\Request.cs" />
+    <Compile Include="Models\Generation\DAXOutstanding.cs" />
+    <Compile Include="Models\Generation\Skip.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Components\PumpingStation\Serializer\Serializer.cs" />
+    <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="Services\ConversionService.cs" />
+    <Compile Include="Services\CurrencyService.cs" />
+    <Compile Include="Services\DateService.cs" />
+    <Compile Include="Components\TrackingStation\EmailService.cs" />
+    <Compile Include="Services\ErrorService.cs" />
+    <Compile Include="Services\FileService.cs" />
+    <Compile Include="Services\FolderService.cs" />
+    <Compile Include="Services\IConfigurationService.cs" />
+    <Compile Include="Services\IConversionService.cs" />
+    <Compile Include="Services\ICurrencyService.cs" />
+    <Compile Include="Services\IDateService.cs" />
+    <Compile Include="Components\TrackingStation\IEmailService.cs" />
+    <Compile Include="Services\IErrorService.cs" />
+    <Compile Include="Services\IFileService.cs" />
+    <Compile Include="Services\IFolderService.cs" />
+    <Compile Include="Components\Turbine\ILogService.cs" />
+    <Compile Include="Components\PumpingStation\ARImportService.cs" />
+    <Compile Include="Components\Turbine\ITransformService.cs" />
+    <Compile Include="Components\Turbine\IValidationService.cs" />
+    <Compile Include="Components\Turbine\LogService.cs" />
+    <Compile Include="Components\Turbine\TransformService.cs" />
+    <Compile Include="Components\Turbine\ValidationService.cs" />
+    <Compile Include="Utilities\SITIComparer.cs" />
+    <Compile Include="Utilities\XBDataComparer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <TransformOnBuild>true</TransformOnBuild>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App.Debug.config">
+      <TransformOnBuild>true</TransformOnBuild>
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="App.Production.config">
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="App.Release.config">
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="App.SIT.config">
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="App.UAT.config">
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Templates\ClaimTemplate.docx" />
+    <None Include="Templates\ClaimTemplateXB.docx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DOCX\" />
+    <Folder Include="HTML\" />
+    <Folder Include="PDF\" />
+    <Folder Include="XML\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icon.ico" />
+    <Content Include="Templates\Temp.txt" />
+    <Content Include="WinSCP.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="XSLT\ClaimXSLT.xslt">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="XSLT\ClaimXSLTXB.xslt">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>5</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Word">
+      <Guid>{00020905-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>8</VersionMajor>
+      <VersionMinor>6</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201802271513336_Initial.resx">
+      <DependentUpon>201802271513336_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809131222173_newXBfields.resx">
+      <DependentUpon>201809131222173_newXBfields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809281014597_Statment3yrPenaltyNewFields.resx">
+      <DependentUpon>201809281014597_Statment3yrPenaltyNewFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810081307238_EFAonXB.resx">
+      <DependentUpon>201810081307238_EFAonXB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810241520516_addedPrecision.resx">
+      <DependentUpon>201810241520516_addedPrecision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811071553482_enitlmentsused4DP.resx">
+      <DependentUpon>201811071553482_enitlmentsused4DP.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202009301028205_latechargepenaltyvalue.resx">
+      <DependentUpon>202009301028205_latechargepenaltyvalue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202010071329426_chargeToChange.resx">
+      <DependentUpon>202010071329426_chargeToChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202012141337511_EnglandLatePenaltyChargeAdded.resx">
+      <DependentUpon>202012141337511_EnglandLatePenaltyChargeAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202108040919024_addPRTable.resx">
+      <DependentUpon>202108040919024_addPRTable.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

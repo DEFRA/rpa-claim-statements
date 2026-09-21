@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=11" />
+    <meta charset="utf-8" />
+    <title>Claim Statement Generator</title>
+    <link href="~/images/Icon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Hind" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Styles.Render("~/Content/bootstrap")
+    @Styles.Render("~/Content/css")
+    @RenderSection("scripts", required: false)
+</head>
+<body class="@(ViewBag.Location == "Home" ? "home" : "")">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="navbar-icon">
+                    <img alt="" src="~/images/icon_inverted-6.png" />
+                </div>
+                @Html.ActionLink("Claim Statement Generator", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav"></ul>
+            </div>
+        </div>
+        <div class="headerbar"></div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()    
+    @if (ViewBag.Location != "Home")
+    {
+        <hr />
+        <footer>
+            <p>DEFRA Digital, Data and Technology Services (DDTS) Development Team</p>
+        </footer>
+    }
+    </div>
+    <script>
+        $.ajaxSetup({
+            cache: false
+        });
+    </script>
+
+</body>
+
+</html>

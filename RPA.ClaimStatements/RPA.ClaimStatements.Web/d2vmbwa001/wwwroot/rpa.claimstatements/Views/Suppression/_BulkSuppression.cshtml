@@ -1,0 +1,81 @@
+﻿@using (Html.BeginForm("_BulkSuppression", "Suppression", FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmBulk" }))
+{
+
+    <div class="row" style="margin-bottom:10px;">
+        <div class="form-group">
+            @Html.Label("Update Direction", new { @class = "control-label col-md-3" })
+            <div class="col-md-7">
+                @Html.DropDownList("BulkDirections", (List<SelectListItem>)ViewBag.CreateOptions, new { @id = "dType", @class = "form-control" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:10px;">
+        <div class="form-group">
+            @Html.Label("Scheme Year", new { @class = "control-label col-md-3" })
+            <div class="col-md-7">
+                @Html.DropDownList("SchemeYears", (List<SelectListItem>)ViewBag.SchemeYears, new { @id = "sYear", @class = "form-control" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom:10px;">
+        <div class="form-group">
+            @Html.Label("Excel Data Source", new { @class = "control-label col-md-3" })
+            <div class="col-md-7">
+                <input type="file" class="hidden" id="bulkSource" name="bulkSource" />
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row" style="margin-bottom:10px;">
+    <div class="col-md-12">
+        <label class="btn btn-primary" for="bulkSource">Browse...</label>
+    </div>
+</div>
+
+<div class="row" style="margin-bottom:10px;">
+    <div class="col-md-12">
+        <div id="selectedFile"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-warning">
+            <p>Please note any invalid FRNs included in the bulk upload will not be updated.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-primary" id="runBulk">Run Bulk Update</button>
+    </div>
+</div>
+
+<script>
+    $("#bulkSource").change(function () {
+        var fn = $("#bulkSource").val();
+
+        if (fn != null) {
+            $("#selectedFile").html('<div class="label label-success">' + fn + '</div>');
+        }
+    });
+
+    $("#runBulk").click(function () {
+        var bd = $("#BulkDirections").val();
+        var sy = $("#SchemeYears").val();
+        var bs = $("#bulkSource").val();
+
+        if (bd == '' || bs == '' || sy == '') {
+            alert("Bulk upload information incomplete.")
+        }
+        else {
+            $("#frmBulk").submit();
+        }
+
+
+    });
+</script>

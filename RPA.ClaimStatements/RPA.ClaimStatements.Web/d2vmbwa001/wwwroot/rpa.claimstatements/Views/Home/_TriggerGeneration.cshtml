@@ -1,0 +1,54 @@
+﻿<div class="panel panel-primary">
+    <div class="panel-heading">
+        Trigger Generation
+    </div>
+    <div class="panel-body">
+        @using (Html.BeginForm("Trigger", "Home", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row" style="margin-bottom:10px;">
+                <div class="form-group">
+                    @Html.Label("Statement Type", new { @class = "control-label col-md-8" })
+                    <div class="col-md-4">
+                        @Html.DropDownList("StatementTypes", (List<SelectListItem>)ViewBag.StatementTypes, new { @class = "form-control number-input" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom:10px;">
+                <div class="form-group">
+                    @Html.Label("Maximum Batch Size", new { @class = "control-label col-md-8" })
+                    <div class="col-md-4">
+                        <input class="number-input form-control" name="maximumBatchSize" id="maximumBatchSize" type="number" value="10" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <span class="btn-group">
+                        <button id="generation-request" class="btn btn-primary" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Generating...">Trigger Generation</button>
+                        <button id="import-request" class="btn btn-primary" type="button" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Importing..." onclick="location.href='@Url.Action("Import", "Import")'">Run Imports</button>
+                    </span>
+                </div>
+            </div>
+        }
+        @if (TempData["Message"] != null)
+        {
+            <div class="row" style="margin-top:10px;">
+                <div class="col-md-12">
+                    <div class="alert alert-success">
+                        <p>@TempData["Message"]</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $('button').click(function () {
+        $(this).button('loading');
+    });
+</script>

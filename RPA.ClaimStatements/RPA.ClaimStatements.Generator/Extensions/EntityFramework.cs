@@ -1,0 +1,30 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace RPA.ClaimStatements.Generator.Extensions
+{
+    public static class EntityFramework
+    {
+        public static void DeleteWhere<T>(this DbContext db, Expression<Func<T, bool>> filter) where T : class
+        {
+            var query = db.Set<T>().Where(filter);
+
+            string selectSql = query.ToString();
+            string deleteSql = "DELETE [Extent1] " + selectSql.Substring(selectSql.IndexOf("FROM"));
+
+            var internalQuery = query.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Where(field => field.Name == "_internalQuery").Select(field => field.GetValue(query)).First();
+            var objectQuery = internalQuery.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance).Where(field => field.Name == "_objectQuery").Select(field => field.GetValue(internalQuery)).First() as ObjectQuery;
+            var parameters = objectQuery.Parameters.Select(p => new SqlParameter(p.Name, p.Value)).ToArray();
+
+            db.Database.ExecuteSqlCommand(deleteSql, parameters);
+        }
+    }
+}

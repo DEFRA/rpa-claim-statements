@@ -1,0 +1,61 @@
+﻿@model List<RPA.ClaimStatements.Generator.Models.Entities.CS.Configuration>
+
+@{
+    ViewBag.Title = "Configuration";
+}
+
+<h2>Generation Configuration</h2>
+
+@Html.ActionLink("Scheme Year Configuration", "SchemeYear")
+
+@using (Html.BeginForm())
+{
+    <table class="table table-condensed table-hover">
+        <tr>
+            <th>@Html.DisplayNameFor(modelItem => Model[0].Setting)</th>
+            <th>@Html.DisplayNameFor(modelItem => Model[0].Value)</th>
+        </tr>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model[i].Setting)
+                </td>
+                @if (Model[i].Setting == "Maximum Batch Size" || Model[i].Setting == "Email Account" || Model[i].Setting == "Maximum Batch Size Cross Border")
+                {
+                    <td>
+                        @Html.TextBoxFor(modelItem => Model[i].Value, new { @class = "form-control" })
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        @Html.DropDownListFor(modelItem => Model[i].Value, new SelectList(ViewBag.ListValues as List<SelectListItem>, "Value", "Text", Model[i].Value), new { @class = "form-control" })
+                    </td>
+                }
+            </tr>
+
+            @Html.HiddenFor(modelItem => Model[i].ConfigurationID)
+            @Html.HiddenFor(modelItem => Model[i].Setting)
+        }
+    </table>
+
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-12">
+            <button class="btn btn-primary">Save Changes</button>
+        </div>
+    </div>
+
+    if (TempData["Message"] != null)
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="alert alert-success">
+                    <p>@TempData["Message"]</p>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+

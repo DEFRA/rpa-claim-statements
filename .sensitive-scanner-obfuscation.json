@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Generator\\Migrations\\Configuration.cs",
+      "line": 26,
+      "category": "pii_person_name",
+      "rule_id": "pii_person_name",
+      "value": "[REDACTED_NAME]",
+      "obfuscated_at": "2026-07-22T08:29:47.880029Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Generator\\Migrations\\Configuration.cs",
+      "line": 25,
+      "category": "pii_person_name",
+      "rule_id": "pii_person_name",
+      "value": "[REDACTED_NAME]",
+      "obfuscated_at": "2026-07-22T08:29:47.880096Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Generator\\Migrations\\Configuration.cs",
+      "line": 24,
+      "category": "pii_person_name",
+      "rule_id": "pii_person_name",
+      "value": "[REDACTED_NAME]",
+      "obfuscated_at": "2026-07-22T08:29:47.880117Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1100435484_115175107__27112019113332.html",
+      "line": 1176,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880132Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1100435484_115175107__27112019113332.html",
+      "line": 1173,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880163Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1102218324_106686629__2511201913210.html",
+      "line": 1132,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880177Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1102218324_106686629__2511201913210.html",
+      "line": 1130,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880189Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1102218324_106686629__2611201911418.html",
+      "line": 1144,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880201Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1102218324_106686629__2611201911418.html",
+      "line": 1142,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880228Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1102270105_107075553__3122019152737.html",
+      "line": 993,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880241Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2019_ClmStmt_1102270105_107075553__3122019152737.html",
+      "line": 990,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880252Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2020_ClmStmt_1102495611_106895688__110202114529.html",
+      "line": 1059,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880264Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\HTML\\RPA_OUT_BPS2020_ClmStmt_1102495611_106895688__110202114529.html",
+      "line": 1054,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880291Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\XML\\4df04ce4-56f3-464f-8d26-62677ecee0c7_27112019113328.xml",
+      "line": 9,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880304Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\XML\\4f6965f4-eea6-4101-912e-b64901530d65_2511201913159.xml",
+      "line": 9,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880314Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\XML\\7e489285-a1c6-4074-89d0-bbc42a72ae51_3122019152736.xml",
+      "line": 9,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880325Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\XML\\d0f4c02a-3d9a-488a-b12e-90709c72a4d6_2611201911415.xml",
+      "line": 9,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880336Z"
+    },
+    {
+      "file": "RPA.ClaimStatements\\RPA.ClaimStatements.Web\\XML\\f6043f6a-cbec-4a88-9d04-a22b5601a589_110202114525.xml",
+      "line": 9,
+      "category": "pii_uk_postcode",
+      "rule_id": "pii_uk_postcode",
+      "value": "[REDACTED_POSTCODE]",
+      "obfuscated_at": "2026-07-22T08:29:47.880347Z"
+    }
+  ]
+}

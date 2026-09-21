@@ -1,0 +1,12 @@
+[
+  {
+    "outputFile": "Content/_accessibility.css",
+    "inputFile": "Content/_accessibility.scss",
+    "sourceMap": false
+  },
+  {
+    "outputFile": "Content/govuk-template.css",
+    "inputFile": "Content/govuk-template.scss",
+    "sourceMap": false
+  }
+]

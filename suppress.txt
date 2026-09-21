@@ -1,0 +1,19 @@
+# Global — all scanners
+CWE-798
+
+[presidio]
+pii_email
+pii_phone
+pii_iban_bank
+pii_iban
+pii_phone
+pii_person_name_bare_key
+
+[gitleaks]
+aws-access-token
+
+[semgrep]
+python.lang.security.audit.formatted-sql-query
+
+[sonarqube]
+secrets:S6706

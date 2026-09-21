@@ -1,0 +1,155 @@
+﻿@model PagedList<RPA.ClaimStatements.Generator.Models.Entities.CS.Error>
+
+@{
+    ViewBag.Title = "Generation Errors";
+}
+
+@using PagedList.Mvc;
+@using PagedList;
+
+<h2>Claim Statement Generation and Validation Errors</h2>
+
+@if (Model.Count == 0)
+{
+    <p>No errors to report.</p>
+}
+else
+{
+    using (Html.BeginForm())
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input class="form-control" type="text" name="searchString" id="searchString" value="@ViewBag.searchData" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" name="request" value="search" id="search">Search</button>
+                            <button class="btn btn-primary" name="request" value="reset" id="reset" type="button" onclick="location.href='@Url.Action("Index", new { searchString = string.Empty })'">Reset</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <table class="table table-condensed table-hover">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model[0].ErrorDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].FRN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].SchemeYear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].ErrorMessage)
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ErrorDate)
+                </td>
+                <td>
+                    @if (item.FRN > 0)
+                    {
+                        @Html.DisplayFor(modelItem => item.FRN)
+                    }
+                </td>
+                <td>
+                    @if (item.SchemeYear > 0)
+                    {
+                        @Html.DisplayFor(modelItem => item.SchemeYear)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ErrorMessage)
+                </td>
+                <td>
+                    @if (User.IsInRole("Claim Statement Generator: Manage Exceptions") && item.FRN > 0 && item.SchemeYear > 0)
+                    {
+                        if (item.Resolved != true)
+                        {
+                            <a class="resolve" data-id="@item.ErrorID" href="javascript:void(0)">Resolve</a>
+                        }
+                        else
+                        {
+                            <span class="label label-success">Resolved</span>
+                        }
+                    }
+                </td>
+                <td>
+                    @if (ViewBag.ForceGeneration == true)
+                    {
+                        if (User.IsInRole("Claim Statement Generator: Force Generation"))
+                        {
+                            if (item.ErrorMessage == "Validation Error: Part C claim history incorrect." || item.ErrorMessage == "Validation Error: Part C payment total doesn't match Claim value for Sterling customer.")
+                            {
+                                <button class="force btn btn-primary" data-id="@item.ErrorID">Force Generation</button>
+                            }
+                        }
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+
+    <div class="row">
+        <div class="col-md-12">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { ViewBag.searchData, page, pageSize = Model.PageSize }))
+            Showing @(Model.TotalItemCount < Model.FirstItemOnPage ? 0 : Model.FirstItemOnPage) to @Model.LastItemOnPage of @Model.TotalItemCount Errors
+
+            @if (User.IsInRole("Claim Statement Generator: Download Data"))
+            {
+                <br />
+                <button class="btn btn-primary" name="request" value="download" id="download" type="button" onclick="location.href='@Url.Action("Download")'">Download All</button>
+                <br />
+            }
+        </div>
+    </div>
+
+    }
+
+        <script>
+    $('.resolve').click(function () {
+
+        var id = $(this).data("id");
+        var button = this;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ResolveError")',
+            traditional: true,
+            data: { id: id },
+            cache: false,
+            success: function (data, status) {
+                $(button).parent().html('<span class="label label-success">Resolved</span>');
+            }
+        });
+    });
+
+    $('.force').click(function () {
+
+        var id = $(this).data("id");
+        var button = this;
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ForceGeneration", "Home")',
+            traditional: true,
+            data: { id: id },
+            cache: false,
+            success: function (data, status) {
+                $(button).parent().text("Generated");
+            }
+        });
+    });
+
+        </script>

@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "Suppressions";
+}
+
+<h2>Suppressions</h2>
+
+@if (User.IsInRole("Claim Statement Generator: Manage Suppressions"))
+{
+    <div class="row">
+        <div class="col-md-6">
+            @{Html.RenderAction("_Create");}
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Existing Suppressions
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="searchString" id="searchString" value="@ViewBag.searchData" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" name="request" value="search" id="search">Search</button>
+                                    <button class="btn btn-primary" name="request" value="reset" id="reset">Reset</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="existingHolder" class="row">
+                    @{Html.RenderAction("_Existing");}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $('#search').click(function () {
+        var searchString = $('#searchString').val();
+        $('#existingHolder').load('@Url.Action("_Existing","Suppression")' + '?searchString=' + searchString)
+    });
+
+    $('#reset').click(function () {
+        var searchString = null;
+        $('#existingHolder').load('@Url.Action("_Existing","Suppression")')
+    });
+</script>

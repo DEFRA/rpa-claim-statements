@@ -1,0 +1,35 @@
+﻿<div class="panel panel-primary">
+    <div class="panel-heading">
+        Create Suppression
+    </div>
+    <div class="panel-body">
+        <div class="row" style="margin-bottom:10px;">
+            <div class="form-group">
+                @Html.Label("Method", new { @class = "control-label col-md-3" })
+                <div class="col-md-7">
+                    @Html.DropDownList("CreateOptions", (List<SelectListItem>)ViewBag.CreateOptions, new { @id = "cType", @class = "form-control" })
+                </div>
+            </div>
+        </div>
+
+        <div id="createHolder">
+            @{Html.RenderAction("_CreateSuppression");}
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#cType").change(function () {
+            $(this).find("option:selected").each(function () {
+                if ($(this).attr("value") == "Record") {
+                    $('#createHolder').load('@Url.Action("_CreateSuppression")');
+                }
+                else if ($(this).attr("value") == "Bulk") {
+                    $('#createHolder').load('@Url.Action("_BulkSuppression")');
+                }
+            });
+        }).change();
+    });
+</script>
