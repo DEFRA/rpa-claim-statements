@@ -292,3 +292,6 @@ __pycache__/
 *.docx
 *.pdf
 *.xml
+
+# MSFT Factory
+.github/prompts
