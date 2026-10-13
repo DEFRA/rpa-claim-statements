@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks to migrate all four RPA Claim Statements projects from .NET Framework 4.5 to .NET 10, including ASP.NET Core MVC and behavioural validation.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-upgrade-readiness",
+      "description": "Establish the .NET 10 migration baseline and resolve compatibility prerequisites for all four solution projects. Addresses Old .NET Framework dependency detected (Runtime.0003). Selected solution: Runtime and Framework Compatibility (kbId: runtime-compatibility-prompt).",
+      "reason": "The user requires .NET 10, which needs an ASP.NET Core migration and verified dependency compatibility, not just execution on .NET Framework 4.8.",
+      "requirements": "Inspect RPA.ClaimStatements/RPA.ClaimStatements.sln and all four csproj files. Consume the source report report-20261005162854 and its dependency-map, api-service-contracts, business-workflows, data-architecture and configuration-inventory facts. Verify .NET 10 SDK and Windows baseline tooling. Capture legacy build/test results, test discovery counts and representative sanitized BPS/XB document outputs using isolated fixtures. Inventory used Framework APIs and package/native-tool compatibility, including EF6, Unity, CSV, Open XML, OpenXmlPowerTools, EPPlus, NReco PDF, WinSCP and any used Windows-only APIs. Resolve availability/compatibility of the internal IDT.dll reference and its external security database role-provider contract. Prefer compatible EF6 over an unrequested EF Core/schema migration. Obtain approval for replacements with licensing or behavioural implications. Record and resolve blockers before downstream work; never use authorization stubs or skipped checks as success. The final target is net10.0 for every project; Framework 4.8 is not an acceptable final outcome.",
+      "successCriteria": {
+        "passBuild": "false",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "false"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-generator-net10",
+      "description": "Migrate the generator, persistence and integration dependencies to .NET 10.",
+      "reason": "The web host and both test projects depend on the generator, which currently targets .NET Framework 4.5.",
+      "requirements": "Convert RPA.ClaimStatements/RPA.ClaimStatements.Generator/RPA.ClaimStatements.Generator.csproj to Microsoft.NET.Sdk with TargetFramework net10.0 and migrate packages.config to PackageReference using Phase 1 decisions. Adapt Program.cs, Context/, Migrations/, Components/, Imports/ and Services/ only where compatibility requires. Preserve the console executable's use as a referenced assembly by the web host, CLI modes/culture, dependency lifetimes, mutexes, feed ordering, eligibility and batch limits, calculations, validation, error/log reporting, FTP, email, templates, PDF output/archive/publication and configuration semantics. Preserve SQL Server schema, EF mappings/precision/history and SqlBulkCopy behaviour; never recreate the database or discard migrations. Preserve resource/content/output-copy and environment configuration behaviour; remove obsolete compiler/build targets only after replacing required behaviour. Build the generator independently on .NET 10 and record fixture-based validation; validate remaining existing tests after their conversion in task 004.",
+      "dependencies": [
+        "001-transform-upgrade-readiness"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "false"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-web-net10",
+      "description": "Migrate the MVC 5 web application to ASP.NET Core MVC on .NET 10 while preserving authentication and operator contracts.",
+      "reason": "System.Web and ASP.NET MVC 5 cannot serve as the .NET 10 web runtime.",
+      "requirements": "Convert RPA.ClaimStatements/RPA.ClaimStatements.Web/RPA.ClaimStatements.Web.csproj to Microsoft.NET.Sdk.Web targeting net10.0 with compatible PackageReferences. Replace Global.asax.cs and applicable App_Start/ setup with Program.cs; port Controllers/, Views/, filters, route registration, static assets/bundles, paging, Unity MVC registration, upload/download handling and configuration. Preserve all 23 assessed MVC actions, routes/verbs, form binding, partial views, redirects, JSON shapes, download formats, antiforgery checks and error reporting. Preserve Windows authentication and every existing role restriction, including multiple-role semantics, using the verified IDT/provider contract or an approved compatible equivalent; do not migrate identity platforms or bypass role checks. Preserve database integrated-security identity expectations. Retain required IIS hosting settings and account for the .NET 10 Hosting Bundle; do not carry System.Web into the final host. Historical deployment-copy directories are not additional projects. Build the web project with the migrated generator and record smoke-check results or explicit environment blockers.",
+      "dependencies": [
+        "001-transform-upgrade-readiness",
+        "002-transform-generator-net10"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "false"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "004-transform-tests-net10",
+      "description": "Migrate both test projects and solution build integration to .NET 10.",
+      "reason": "Legacy MVC/HTTP context test APIs, package adapters and Visual Studio test assemblies need compatible replacements.",
+      "requirements": "Convert RPA.ClaimStatements/RPA.ClaimStatements.Generator.Tests/RPA.ClaimStatements.Generator.Tests.csproj and RPA.ClaimStatements/RPA.ClaimStatements.Web.Tests/RPA.ClaimStatements.Web.Tests.csproj to SDK-style net10.0 with PackageReference. Select compatible test SDK/framework/adapters, NUnit/Moq and EF test-double dependencies based on actual usage; replace obsolete Visual Studio test references. Adapt existing tests under both projects for modern MVC, HTTP contexts, configuration and data APIs while preserving assertion intent. Do not disable/exclude tests or weaken assertions to obtain a pass. Preserve test data/resources and reconcile test discovery counts against task 001. Integrate all four projects/configurations in RPA.ClaimStatements/RPA.ClaimStatements.sln. Restore/build and run both existing test suites with .NET 10, explicitly reporting baseline failures and approved differences.",
+      "dependencies": [
+        "002-transform-generator-net10",
+        "003-transform-web-net10"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "security",
+      "id": "005-security-cve-remediation",
+      "description": "Scan and remediate dependency CVEs after the .NET 10 migration.",
+      "reason": "Security/CVE remediation is a standard validation task in the modernization planning workflow.",
+      "requirements": "Scan direct and transitive .NET dependencies for all four migrated projects. Remediate identified CVEs using compatible patched versions and verify the net10.0 solution still builds and existing tests pass. Document any major-version/licensing/behavioural impact and seek approval where required. Rescan after remediation. Report unresolved findings explicitly and block final acceptance rather than claiming a clean scan. Preserve the original plan's security hygiene scope without introducing unrelated cloud or identity migrations.",
+      "dependencies": [
+        "004-transform-tests-net10"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+        "type": "transform",
+        "id": "006-transform-net10-acceptance",
+        "description": "Verify published .NET 10 applications preserve existing behaviour and document supported operation.",
+        "reason": "Successful compilation alone does not prove native document generation, Windows identity, persistence or operator workflows work on the target runtime.",
+        "requirements": "Using the .NET 10 SDK, restore/build/test RPA.ClaimStatements/RPA.ClaimStatements.sln in Release and publish the generator and web applications. Verify all four projects explicitly target net10.0 and final production paths have no Framework-only runtime or System.Web dependencies. Start the published web host on Windows; exercise assessed generation/import, configuration/scheme-year, suppression/bulk upload, error resolution, paging, logs and download flows, including authorized, denied and unauthenticated identities. Verify generator CLI modes, import/reconciliation, schema/migration history, bulk copy, mutexes, batch limits, native document/FTP tooling, filesystem publication/archive and email reporting against isolated fixtures. Compare representative BPS/XB PDFs and other output contracts to task 001 baselines, using the existing PdfCompare utility where suitable, without changing that standalone utility. Do not run live generation/imports, destructive UAT reset instructions, or production database migrations. Report missing environment evidence or unresolved compatibility/security issues as blockers, not passed checks. Update README.md with .NET 10 SDK/Hosting Bundle prerequisites, approved dependency/native-tool requirements, configuration without embedded secrets, Windows/IIS/console operation and reproducible restore/build/test/publish instructions. No Azure deployment or new test suite is required.",
+        "dependencies": [
+          "005-security-cve-remediation"
+        ],
+        "successCriteria": {
+          "passBuild": "true",
+          "generateNewUnitTests": "false",
+          "passUnitTests": "true"
+        }
+    }
+  ],
+  "metadata": {
+    "planName": "Runtime and Framework Compatibility - .NET 10",
+    "projectName": "RPA Claim Statements",
+    "language": "dotnet",
+    "createdAt": "2026-10-09T16:44:11+02:00",
+    "version": "2.0"
+  }
+}

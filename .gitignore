@@ -295,3 +295,4 @@ __pycache__/
 
 # MSFT Factory
 .github/prompts
+.github/skills
