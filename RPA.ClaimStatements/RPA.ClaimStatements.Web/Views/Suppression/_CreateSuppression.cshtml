@@ -9,7 +9,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.FRN, new { @class = "control-label col-md-3" })
             <div class="col-md-7">
-                @Html.TextBoxFor(model => model.FRN, new { @Value = (Model.FRN > 0 ? Model.FRN.ToString() : ""), @class = "form-control" })
+                @Html.TextBox("FRN", (Model.FRN > 0 ? Model.FRN.ToString() : ""), new { data_val_number = "The field FRN must be a number.", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.FRN, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -19,7 +19,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.SchemeYear, new { @class = "control-label col-md-3" })
             <div class="col-md-7">
-                @Html.TextBoxFor(model => model.SchemeYear, new { @Value = (Model.SchemeYear > 0 ? Model.SchemeYear.ToString() : ""), @class = "form-control" })
+                @Html.TextBox("SchemeYear", (Model.SchemeYear > 0 ? Model.SchemeYear.ToString() : ""), new { data_val_number = "The field Scheme Year must be a number.", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.SchemeYear, "", new { @class = "text-danger" })
             </div>
         </div>

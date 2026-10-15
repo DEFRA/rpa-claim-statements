@@ -1,4 +1,6 @@
-﻿using PagedList;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Web.Models;
@@ -6,8 +8,8 @@ using RPA.ClaimStatements.Web.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Text;
+using X.PagedList;
 
 namespace RPA.ClaimStatements.Web.Controllers
 {
@@ -25,10 +27,16 @@ namespace RPA.ClaimStatements.Web.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            // The existing-suppressions panel was a child action (RenderAction("_Existing")) with default arguments.
+            return View(ExistingSuppressions(null, 1, 15));
         }
 
         public ActionResult _Existing(string searchString = null, int page = 1, int pageSize = 15)
+        {
+            return PartialView(ExistingSuppressions(searchString, page, pageSize));
+        }
+
+        private PagedList<Suppression> ExistingSuppressions(string searchString, int page, int pageSize)
         {
             PagedList<Suppression> suppressions;
 
@@ -43,11 +51,11 @@ namespace RPA.ClaimStatements.Web.Controllers
             
             ViewBag.searchData = searchString;
 
-            return PartialView(suppressions);
+            return suppressions;
         }
 
         [Authorize(Roles = "Claim Statement Generator: Download Data")]
-        public void Download()
+        public ActionResult Download()
         {
             var suppressions = db.Suppressions
                 .AsNoTracking()
@@ -55,21 +63,15 @@ namespace RPA.ClaimStatements.Web.Controllers
                 .Where(x => x.SuppressionEnd == null)
                 .OrderByDescending(x => x.SuppressionStart);
 
-            Response.Clear();
-            Response.Buffer = true;
-            Response.AddHeader("content-disposition", "attachment;filename=Suppressions.csv");
-            Response.Charset = "";
-            Response.ContentType = "application/text";
-            Response.Output.Write(suppressions.ToCsv());
-            Response.Flush();
-            Response.End();
+            Response.Headers["Content-Disposition"] = "attachment;filename=Suppressions.csv";
+
+            // UTF-8 without a byte order mark and without a charset parameter, as before.
+            return File(new UTF8Encoding(false).GetBytes(suppressions.ToCsv()), "application/text");
         }
 
         [Authorize(Roles = "Claim Statement Generator: Manage Suppressions")]
         public ActionResult _Create()
         {
-            ViewBag.CreateOptions = SelectionValues.CreateOptions();
-
             return PartialView();
         }
 
@@ -111,7 +113,7 @@ namespace RPA.ClaimStatements.Web.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Claim Statement Generator: Manage Suppressions")]
-        public ActionResult _BulkSuppression(string BulkDirections, string SchemeYears, HttpPostedFileBase bulkSource)
+        public ActionResult _BulkSuppression(string BulkDirections, string SchemeYears, IFormFile bulkSource)
         {
             try
             {

@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace RPA.ClaimStatements.Web.Tests.Controllers
 {
@@ -24,22 +26,23 @@ namespace RPA.ClaimStatements.Web.Tests.Controllers
         {
             mockContext = new Mock<IClaimStatementsContext>();
             controller = new ConfigurationController(mockContext.Object);
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
         }
 
         [Test]
         public void Test_Index_Returns_View_On_Post()
         {
-            var result = (RedirectToRouteResult)controller.Index(new List<Configuration>());
+            var result = (RedirectToActionResult)controller.Index(new List<Configuration>());
 
-            Assert.AreEqual("Index", result.RouteValues["action"]);
+            Assert.AreEqual("Index", result.ActionName);
         }        
 
         [Test]
         public void Test_SchemeYear_Returns_View_On_Post()
         {
-            var result = (RedirectToRouteResult)controller.SchemeYear(new List<SchemeYear>());
+            var result = (RedirectToActionResult)controller.SchemeYear(new List<SchemeYear>());
 
-            Assert.AreEqual("SchemeYear", result.RouteValues["action"]);
+            Assert.AreEqual("SchemeYear", result.ActionName);
         }
     }
 }

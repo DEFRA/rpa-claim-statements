@@ -10,8 +10,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace RPA.ClaimStatements.Web.Tests.Controllers
 {
@@ -31,6 +32,7 @@ namespace RPA.ClaimStatements.Web.Tests.Controllers
             sampleService = new Mock<ISampleService>();
             sampleXBService = new Mock<ISampleXBService>();
             controller = new HomeController(powerPlant.Object, sampleService.Object, sampleXBService.Object);
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
         }
 
         [Test]
@@ -38,15 +40,15 @@ namespace RPA.ClaimStatements.Web.Tests.Controllers
         {
             var result = (ViewResult)controller.Index();
 
-            Assert.AreEqual("", result.ViewName);
+            Assert.IsNull(result.ViewName);
         }
 
         [Test]
         public void Test_Trigger_Returns_View()
         {
-            var result = (RedirectToRouteResult)controller.Trigger();
+            var result = (RedirectToActionResult)controller.Trigger();
 
-            Assert.AreEqual("Index", result.RouteValues["action"]);
+            Assert.AreEqual("Index", result.ActionName);
         }
     }
 }

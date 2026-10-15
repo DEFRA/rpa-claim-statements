@@ -9,7 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace RPA.ClaimStatements.Web.Tests.Controllers
 {
@@ -24,10 +26,11 @@ namespace RPA.ClaimStatements.Web.Tests.Controllers
             Mock<IPumpingStation> pumpingStation = new Mock<IPumpingStation>();
 
             ImportController controller = new ImportController(mockContext.Object, pumpingStation.Object);
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
 
-            var result = (RedirectToRouteResult)controller.Import();
+            var result = (RedirectToActionResult)controller.Import();
 
-            Assert.AreEqual("Index", result.RouteValues["action"]);
+            Assert.AreEqual("Index", result.ActionName);
         }
     }
 }

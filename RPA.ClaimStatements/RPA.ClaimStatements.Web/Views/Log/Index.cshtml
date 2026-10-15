@@ -1,0 +1,218 @@
+@model PagedList<RPA.ClaimStatements.Generator.Models.Entities.CS.Log>
+
+@{
+    ViewBag.Title = "Log";
+}
+
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+
+<h2>Claim Statement Generation Log</h2>
+
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="input-group">
+                    <input class="form-control" type="text" name="searchString" id="searchString" value="@ViewBag.searchData" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" name="request" value="search" id="search">Search</button>
+                        <button class="btn btn-primary" name="request" value="reset" id="reset" type="button" onclick="location.href='@Url.Action("Index", new { searchString = string.Empty })'">Reset</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-warning">
+            <p>Please note you will only be able to view a generated Claim Statement if you have access to the Finance archive directory.  If you do not have access you will need to submit a Reg1 to the Service Desk to request this.</p>
+        </div>
+    </div>
+</div>
+
+@if (User.IsInRole("Claim Statement Generator: Manual Upload"))
+{
+    if (ViewBag.uploadActive)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <h4>Upload Manual Statement</h4>
+
+                <p>Statement must be in PDF format.</p>
+
+                @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmUpload" }))
+                {
+                    <table>
+                        <tr>
+                            <th>
+                                @Html.Label("FRN")
+                            </th>
+                            <th>
+                                @Html.Label("SBI")
+                            </th>
+                            <th>
+                                @Html.Label("Scheme Year")
+                            </th>
+                            <th>
+                                @Html.Label("Upload File")
+                            </th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="number" name="ufrn" id="ufrn" />
+                            </td>
+                            <td>
+                                <input type="number" name="usbi" id="usbi" />
+                            </td>
+                            <td>
+                                <input type="number" name="uschemeYear" id="uschemeYear" />
+                            </td>
+                            <td>
+                                <input type="file" class="hidden" name="uFile" id="uFile" />
+
+                                <label class="btn btn-primary" for="uFile">Browse...</label>
+                                <div id="selectedFile" style="color:green;"></div>
+                            </td>
+                            <td>
+                                <button id="upload" class="btn btn-primary">Upload</button>
+                            </td>
+                        </tr>
+                    </table>
+                    if (TempData["Message"] != null)
+                    {
+                        <p id="successText" style="color:green;">@TempData["Message"]</p>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+
+@if (Model.Count > 0)
+{
+    <table class="table table-condensed table-hover">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model[0].ClaimProduced)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].FRN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].SBI)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].SchemeYear)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model[0].PDFFile)
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClaimProduced)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FRN)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SBI)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SchemeYear)
+                </td>
+                <td>
+                    @if (item.PDFFile != "Not Archived")
+                    {
+                        <a href="@item.PDFFile">View</a>
+                    }
+                </td>
+            </tr>
+
+            if (item.Uploaded != null)
+            {
+                <tr>
+                    <td>
+                        <span class="label label-default">Manual Claim Statement uploaded by @item.UploadedBy on @item.UploadedShort</span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            }
+        }
+
+    </table>
+
+    <div class="row">
+        <div class="col-md-12">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { ViewBag.searchData, page, pageSize = Model.PageSize }), PagerOptions.Legacy)
+            Showing @(Model.TotalItemCount < Model.FirstItemOnPage ? 0 : Model.FirstItemOnPage) to @Model.LastItemOnPage of @Model.TotalItemCount Claim Statements
+            <br />
+            <br />
+
+            @if (User.IsInRole("Claim Statement Generator: Download Data"))
+            {
+                using (Html.BeginForm("Download", "Log", FormMethod.Post, new { enctype = "multipart/form-data", @id = "frmDownload" }))
+                {
+                    <label>Max logs to download</label>
+                    <input type="number" name="count" id="count" value="100" />
+                    <button class="btn btn-primary" name="request" value="download" id="download">Download</button>
+                }
+            }
+            </div>
+    </div>
+}
+<script>
+    $("#uFile").change(function () {
+        var fn = $("#uFile").val();
+
+        if (fn != null) {
+            $("#selectedFile").text(fn);
+        }
+    });
+
+    $("#download").click(function (e) {
+        if ($('#count').val() == '') {
+            alert("Enter Max logs to download.");
+            e.preventDefault();
+        }
+    });
+
+    $("#upload").click(function (e) {
+        e.preventDefault();
+
+        var frn = $("#ufrn").val();
+        var sbi = $("#usbi").val();
+        var schemeYear = $("#uschemeYear").val();
+        var file = $("#uFile").val();
+
+        if (frn == '' || frn.length != 10) {
+            alert("FRN Invalid.")
+        }
+        else if (sbi == '' || sbi.length != 9) {
+            alert("SBI Invalid.")
+        }
+        else if (schemeYear == '' || schemeYear < 2015) {
+            alert("Scheme Year Invalid.");
+        }
+        else if (file == '') {
+            alert("File Invalid.");
+        }
+        else {
+            $("#frmUpload").submit();
+        }
+
+    });
+</script>

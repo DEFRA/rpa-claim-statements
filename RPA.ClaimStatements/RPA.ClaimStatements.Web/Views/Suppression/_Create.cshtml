@@ -5,15 +5,15 @@
     <div class="panel-body">
         <div class="row" style="margin-bottom:10px;">
             <div class="form-group">
-                @Html.Label("Method", new { @class = "control-label col-md-3" })
+                @Html.Label("Method", null, new { @class = "control-label col-md-3" })
                 <div class="col-md-7">
-                    @Html.DropDownList("CreateOptions", (List<SelectListItem>)ViewBag.CreateOptions, new { @id = "cType", @class = "form-control" })
+                    @Html.DropDownList("CreateOptions", SelectionValues.CreateOptions(), new { @id = "cType", @class = "form-control" })
                 </div>
             </div>
         </div>
 
         <div id="createHolder">
-            @{Html.RenderAction("_CreateSuppression");}
+            @await Html.PartialAsync("_CreateSuppression", new RPA.ClaimStatements.Generator.Models.Entities.CS.Suppression())
         </div>
 
     </div>

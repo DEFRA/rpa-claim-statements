@@ -7,8 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI;
 using System.Data.Entity;
+using HtmlTextWriter = RPA.ClaimStatements.Generator.Components.TrackingStation.ReportHtmlWriter;
+using HtmlTextWriterTag = RPA.ClaimStatements.Generator.Components.TrackingStation.ReportHtmlWriter.Tag;
 
 namespace RPA.ClaimStatements.Generator.Components.TrackingStation
 {

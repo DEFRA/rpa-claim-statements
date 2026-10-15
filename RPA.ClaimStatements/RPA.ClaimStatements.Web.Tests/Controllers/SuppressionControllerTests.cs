@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace RPA.ClaimStatements.Web.Tests.Controllers
 {
@@ -34,7 +34,7 @@ namespace RPA.ClaimStatements.Web.Tests.Controllers
         {
             var result = (PartialViewResult)controller._Create();
 
-            Assert.AreEqual("", result.ViewName);
+            Assert.IsNull(result.ViewName);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace RPA.ClaimStatements.Web.Tests.Controllers
         {
             var result = (PartialViewResult)controller._CreateSuppression();
 
-            Assert.AreEqual("", result.ViewName);
+            Assert.IsNull(result.ViewName);
         }        
 
         [Test]
@@ -50,7 +50,7 @@ namespace RPA.ClaimStatements.Web.Tests.Controllers
         {
             var result = (PartialViewResult)controller._BulkSuppression();
 
-            Assert.AreEqual("", result.ViewName);
+            Assert.IsNull(result.ViewName);
         }        
     }
 }

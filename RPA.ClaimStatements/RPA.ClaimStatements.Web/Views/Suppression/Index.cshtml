@@ -1,4 +1,6 @@
-﻿@{
+﻿@model X.PagedList.PagedList<RPA.ClaimStatements.Generator.Models.Entities.CS.Suppression>
+
+@{
     ViewBag.Title = "Suppressions";
 }
 
@@ -8,7 +10,7 @@
 {
     <div class="row">
         <div class="col-md-6">
-            @{Html.RenderAction("_Create");}
+            @await Html.PartialAsync("_Create")
         </div>
     </div>
 }
@@ -34,7 +36,7 @@
                     </div>
                 </div>
                 <div id="existingHolder" class="row">
-                    @{Html.RenderAction("_Existing");}
+                    @await Html.PartialAsync("_Existing", Model)
                 </div>
             </div>
         </div>

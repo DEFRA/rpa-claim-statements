@@ -1,12 +1,13 @@
-﻿using PagedList;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Text;
+using X.PagedList;
 
 namespace RPA.ClaimStatements.Web.Controllers
 {
@@ -25,21 +26,17 @@ namespace RPA.ClaimStatements.Web.Controllers
             }
 
             [Authorize(Roles = "Claim Statement Generator: Download Data")]
-            public void Download(int count)
+            public ActionResult Download(int count)
             {
                 var logs = db.Log
                     .AsNoTracking()
                     .Select(l => new { l.SBI, l.FRN, l.SchemeYear, l.ClaimProduced, l.PDFFile })
                     .OrderByDescending(x => x.ClaimProduced).Take(count);
 
-                Response.Clear();
-                Response.Buffer = true;
-                Response.AddHeader("content-disposition", "attachment;filename=Log.csv");
-                Response.Charset = "";
-                Response.ContentType = "application/text";
-                Response.Output.Write(logs.ToCsv());
-                Response.Flush();
-                Response.End();
+                Response.Headers["Content-Disposition"] = "attachment;filename=Log.csv";
+
+                // UTF-8 without a byte order mark and without a charset parameter, as before.
+                return File(new UTF8Encoding(false).GetBytes(logs.ToCsv()), "application/text");
             }
 
             public ActionResult Index(string searchString = null, int page = 1, int pageSize = 15)

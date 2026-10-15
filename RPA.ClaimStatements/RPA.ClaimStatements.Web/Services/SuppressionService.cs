@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace RPA.ClaimStatements.Web.Services
 {
@@ -26,7 +26,7 @@ namespace RPA.ClaimStatements.Web.Services
             this.root = folderService.Root();
         }
 
-        public void BulkUpdate(string direction, string schemeYear, HttpPostedFileBase bulkSource)
+        public void BulkUpdate(string direction, string schemeYear, IFormFile bulkSource)
         {
             DataTable bulkData = BulkData(bulkSource);
 
@@ -45,10 +45,14 @@ namespace RPA.ClaimStatements.Web.Services
             }
         }
 
-        public DataTable BulkData(HttpPostedFileBase bulkSource)
+        public DataTable BulkData(IFormFile bulkSource)
         {
             string filepath = Path.Combine(root, "Uploads",Path.GetFileName(bulkSource.FileName));
-            bulkSource.SaveAs(filepath);
+
+            using (FileStream upload = new FileStream(filepath, FileMode.Create))
+            {
+                bulkSource.CopyTo(upload);
+            }
 
             DataTable bulkTable = new DataTable("BulkSource");
 

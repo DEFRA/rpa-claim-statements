@@ -1,4 +1,5 @@
-﻿using PagedList;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Services;
@@ -7,8 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.Mvc;
+using X.PagedList;
 
 namespace RPA.ClaimStatements.Web.Controllers
 {
@@ -58,7 +58,7 @@ namespace RPA.ClaimStatements.Web.Controllers
         }
 
         [Authorize(Roles = "Claim Statement Generator: Download Data")]
-        public void Download()
+        public ActionResult Download()
         {
             var errors = db.Errors
                 .AsNoTracking()
@@ -66,13 +66,10 @@ namespace RPA.ClaimStatements.Web.Controllers
                 .Where(x => !x.Resolved)
                 .OrderByDescending(x => x.ErrorDate);
 
-            Response.Clear();
-            Response.Buffer = true;
-            Response.AddHeader("content-disposition", "attachment;filename=Errors.csv");
-            Response.ContentType = "application/text;";
-            Response.BinaryWrite(StreamExtensions.ToBytes(errors.ToCsv(), Encoding.UTF8));
-            Response.Flush();
-            Response.End();
+            Response.Headers["Content-Disposition"] = "attachment;filename=Errors.csv";
+
+            // The UTF-8 byte order mark is part of the file, as before.
+            return File(StreamExtensions.ToBytes(errors.ToCsv(), Encoding.UTF8), "application/text");
         }
 
         [HttpPost]

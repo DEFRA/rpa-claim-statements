@@ -132,6 +132,7 @@ namespace RPA.ClaimStatements.Generator.Components.Turbine
             string pdfFilePath = Path.Combine(root, "PDF", string.Format("RPA_OUT_BPS{0}_ClmStmt_{1}_{2}_{3}.pdf", schemeYear, frn, sbi, dateService.CurrentDateTimeString()));
             
             var htmlToPdf = new NReco.PdfGenerator.HtmlToPdfConverter();
+            htmlToPdf.PdfToolPath = PdfToolFolder();
             htmlToPdf.Zoom = 1.18F;
 
             var margin = new NReco.PdfGenerator.PageMargins();
@@ -143,6 +144,20 @@ namespace RPA.ClaimStatements.Generator.Components.Turbine
             htmlToPdf.GeneratePdfFromFile(filePath, null, pdfFilePath);
 
             return pdfFilePath;
+        }
+
+        // Pinned to the shipped wkhtmltopdf 0.12.4 so PDFs match the legacy output; if the exe were missing NReco would silently extract its own 0.12.6.
+        static string PdfToolFolder()
+        {
+            string folder = Path.Combine(AppContext.BaseDirectory, "wkhtmltopdf");
+            string exe = Path.Combine(folder, "wkhtmltopdf.exe");
+
+            if (!File.Exists(exe))
+            {
+                throw new FileNotFoundException("The pinned wkhtmltopdf.exe was not found.", exe);
+            }
+
+            return folder;
         }
 
         public string ConvertToXML(ClaimStatement statement, string statementType)

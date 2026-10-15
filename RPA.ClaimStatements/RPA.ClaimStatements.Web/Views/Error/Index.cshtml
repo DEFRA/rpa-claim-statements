@@ -4,8 +4,8 @@
     ViewBag.Title = "Generation Errors";
 }
 
-@using PagedList.Mvc;
-@using PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
 
 <h2>Claim Statement Generation and Validation Errors</h2>
 
@@ -103,7 +103,7 @@ else
 
     <div class="row">
         <div class="col-md-12">
-            @Html.PagedListPager(Model, page => Url.Action("Index", new { ViewBag.searchData, page, pageSize = Model.PageSize }))
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { ViewBag.searchData, page, pageSize = Model.PageSize }), PagerOptions.Legacy)
             Showing @(Model.TotalItemCount < Model.FirstItemOnPage ? 0 : Model.FirstItemOnPage) to @Model.LastItemOnPage of @Model.TotalItemCount Errors
 
             @if (User.IsInRole("Claim Statement Generator: Download Data"))
@@ -142,7 +142,7 @@ else
 
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("ForceGeneration", "Home")',
+            url: '@Url.Content("~/Home/ForceGeneration")',
             traditional: true,
             data: { id: id },
             cache: false,

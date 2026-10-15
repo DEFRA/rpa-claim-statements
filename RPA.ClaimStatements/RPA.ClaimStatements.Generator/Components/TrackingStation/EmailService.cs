@@ -46,7 +46,7 @@ namespace RPA.ClaimStatements.Generator.Components.TrackingStation
             message.From = new MailAddress(email);
             message.To.Add(new MailAddress(email));
 
-            SmtpClient client = new SmtpClient();
+            SmtpClient client = SmtpSettingsSection.CreateClient();
             client.Send(message);
         }
 

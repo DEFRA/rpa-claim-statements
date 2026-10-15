@@ -42,7 +42,7 @@ namespace RPA.ClaimStatements.Generator.Services
 
         public string Root()
         {            
-            return HttpRuntime.AppDomainAppId != null ? AppDomain.CurrentDomain.BaseDirectory : Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName;           
+            return HostEnvironment.IsWebHosted ? AppDomain.CurrentDomain.BaseDirectory : Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName;           
         }
 
         private bool disposedValue = false;
