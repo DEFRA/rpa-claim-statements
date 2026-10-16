@@ -1,0 +1,26 @@
+10: > engine superseded 2026-10-16, same day, from an earlier Azure PostgreSQL selection — see
+12: > Database, not postgresql."*). This assessment and the accompanying `Migration-Plan.md` cover **application code
+17: > this report. **Earlier PostgreSQL-specific findings in this report's prior revision are superseded by this
+19: > SQL Server → PostgreSQL) means several PostgreSQL-only risks no longer apply, while new, narrower Azure SQL
+26: - **Primary migration drivers:** User-selected modernization priority; runtime already on .NET 10 (no forced upgrade); user-selected target engine is **Azure SQ
+40: | Database engine (target) | **Azure SQL Database** (engine choice only; exact SKU/service owned by external team, not confirmed here; superseded 2026-10-16 fro
+81: > PostgreSQL selection — the diagram below reflects the current, authoritative Azure SQL Database target.**
+172: - **Target:** Microsoft Entra ID, single-tenant (D-09, D-10 ✅ DECIDED). **The code has not yet been changed** — this is a Phase 2 activity. Per `modernization-f
+196: > **Supersedes this report's earlier "PostgreSQL Conversion Blast Radius" section** (database engine superseded
+203: > rather than SQL Server → PostgreSQL), this table's framing has changed:** most rows below conclude "likely
+213: | 2 | `RPA.ClaimStatements.Generator\Components\PumpingStation\BulkInsert\SQLBulkInsert.cs:1-45` | `SqlBulkCopy` (`System.Data.SqlClient`) driven ingestion, wit
+215: | 4 | `RPA.ClaimStatements.Generator\Context\ClaimStatementContext.cs` `DbSet<T>` names (e.g. `AP`, `AR`, `BPS`, `BPSPEN`, `CLD`, `GR`, `GRPEN`, `PR`, `SUM`, `S
+217: | 6 | `RPA.ClaimStatements.Web\Security\RoleStore.cs:1-52` | `SecurityDatabaseRoleStore.GetRolesForUser` calls stored procedure `dbo.aspnet_UsersInRoles_GetRole
+219: | 8 | `RPA.ClaimStatements.CrossBorder\Cross_Border_Create_Table_Script.sql` (29 `GO`-batch-separated `CREATE TABLE`/`ALTER` statements, e.g. line 11 `CREATE TA
+220: | 9 | `RPA.ClaimStatements.Web\Program.cs` (Windows Negotiate auth) and `App.config` connection strings (implied `Integrated Security`/trusted-connection patter
+223: **is not inherently blocked by the engine change** — unlike the earlier PostgreSQL analysis, no ORM/provider swap or
+239: > Risk ranks reflect source-code evidence only, scoped to code-portability and compatibility concerns. No exploitable-vulnerability scan was performed; CVE refe
+243: | R1 | EF6 + `System.Data.SqlClient` retention against Azure SQL Database is the reassessed default, but has not yet been proven against the external team's act
+244: | R2 | `SqlBulkCopy`-based bulk ingestion (13 entity types) is supported against Azure SQL Database, but batch/throughput/auth behavior is unproven against the 
+268: - **Root cause classification:** package-feed ingestion policy / insufficient permission on the configured feed, **not** an established C# compile failure, and 
+275: > Effort labels are conservative, conditional engineer-day **ranges** for planning purposes only — not a delivery commitment. **Backlog IDs are preserved across
+280: | C02 | Bulk ingestion | **Revised:** Validate existing `SqlBulkCopy`-based ingestion (13 entity types) against the external team's actual Azure SQL Database se
+283: | C05 | Schema mapping | **Retired as a blocking item.** Azure SQL Database uses the same T-SQL identifier case-folding/bracket-quoting rules as SQL Server (sam
+284: | C06 | Data access | **Retired as a blocking item.** The `[Extent1]`-bracket-quoted-alias DELETE syntax and `System.Data.SqlClient.SqlParameter` used in `Entit
+304: - Source engine is confirmed SQL Server (EF6 + raw ADO.NET); target engine is Azure SQL Database (D-04 ✅ DECIDED — engine only; superseded 2026-10-16 from an ea
+316: **Decisions (made, scope-bounded):** D-01, D-02, D-04 (engine only, clarified — Azure SQL Database, superseded from PostgreSQL 2026-10-16), D-06, D-09, D-10, D-

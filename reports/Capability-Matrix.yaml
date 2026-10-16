@@ -1,0 +1,466 @@
+# Discovery snapshot, not an architecture or deployment approval.
+# Unknown values are intentional: do not coerce them to false or select defaults.
+schema_version: '1.0'
+authored_date: '2026-10-16'
+approved_date: pending
+discovery_status: complete-with-open-questions
+
+application:
+  name: rpa-claim-statements
+  owner: unknown
+  purpose: Generate BPS and cross-border claim-statement PDFs from SITI and DAX settlement data.
+  criticality: unknown
+  business_priority: modernize
+  evidence_confidence: medium
+  evidence_paths:
+    - README.md
+    - reports\Report-Status.md
+  notes: Organisation is DEFRA/RPA; named accountable owner, criticality, and user counts require Q10.
+
+source:
+  primary_adapter: source-on-premise
+  access_method: filesystem-path
+  secondary_adapters: []
+  evidence_confidence: low
+  evidence_paths:
+    - reports\Report-Status.md
+    - RPA.ClaimStatements\RPA.ClaimStatements.sln
+  notes: |
+    User confirmed on-premises hosting and current repository access. The selected
+    adapter is applied to supplied artifacts only, not a production server.
+    Source-code access is confirmed; deployed OS, versions, services, service
+    identities, schedules, topology, and correspondence to this checkout are not.
+    Q1 is the blocking production-deployment probe.
+
+stack:
+  primary_stack: dotnet
+  primary_framework: aspnet-core-10
+  secondary_stacks:
+    - nodejs
+  build_system: msbuild
+  runtime_version_detected: net10.0
+  evidence_confidence: high
+  evidence_paths:
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\RPA.ClaimStatements.Generator.csproj
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\RPA.ClaimStatements.Web.csproj
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator.Tests\RPA.ClaimStatements.Generator.Tests.csproj
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web.Tests\RPA.ClaimStatements.Web.Tests.csproj
+    - PdfCompare\package.json
+  notes: |
+    Current source already targets .NET 10; the older .NET Framework 4.5 scan is
+    historical, not the current runtime. Windows-only dependencies remain.
+    Node.js is only the standalone PdfCompare development/test utility, not
+    the deployed application runtime; its version is unknown (Q12).
+    Browser JavaScript is not a separate production Node.js service.
+    Approximately 13,615 first-party compiled C# lines across four projects,
+    excluding generated designers, excluded duplicates and historical copies.
+  secondary_runtime_versions:
+    nodejs: unknown
+  component_roles:
+    - component: Generator
+      role: Console generator and shared in-process generation logic.
+      runtime: net10.0
+    - component: Web
+      role: ASP.NET Core MVC administrative UI; references Generator.
+      runtime: net10.0
+    - component: PdfCompare
+      role: Manually invoked PDF text-comparison tooling; npm dependencies.
+      runtime: unknown
+  adapters:
+    - .github\skills\stack-adapters\references\stack-dotnet.md
+    - .github\skills\stack-adapters\references\stack-nodejs.md
+
+workload:
+  primary_pattern: webapp
+  secondary_patterns:
+    - batch-job
+  entry_points:
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\Program.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Program.cs
+    - DAXAPFileTransfer.ps1
+  evidence_confidence: high
+  evidence_paths:
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\Program.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Program.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\PowerPlant.cs
+    - DAXAPFileTransfer.ps1
+  notes: |
+    Web runs Generator logic in-process, not through a queue or a separate
+    deployed worker. The generator also has a console entrypoint.
+    CLI accepts ALL, BPS, XB, or I and an optional batch size; no-argument
+    interactive behavior needs an explicit noninteractive launch contract.
+    Machine-scoped named mutexes do not coordinate different replicas.
+    Actual production scheduling, run volumes and overlap policy are unknown (Q6).
+    Import stages support document generation; no separate ETL platform is inferred.
+  adapters:
+    - .github\skills\workload-adapters\references\workload-webapp.md
+    - .github\skills\workload-adapters\references\workload-batch-job.md
+
+data:
+  primary_datastore: sql-server
+  datastore_version: unknown
+  data_gravity: unknown
+  approximate_size: unknown
+  schema_highlights:
+    - EF6 context and bulk-ingestion paths; SQL Server engine is confirmed by source.
+    - Main application database and separate SQL-backed authorization database.
+    - Logical SITI, DAX, XB, CS, Log, Monitor, and FDMR schemas.
+    - Approximately 26 mapped entities and EF migration history from 2018 through 2021.
+    - Standalone cross-border and FDMR SQL assets outside the EF model.
+    - FDMR export script invokes xp_cmdshell and BCP on the database host.
+    - Production schema drift and migration-history alignment require owner evidence.
+  evidence_confidence: low
+  evidence_paths:
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Context\ClaimStatementContext.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Context\IClaimStatementsContext.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Migrations
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\Security\RoleStore.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.FDMR\LoadExtract.sql
+    - modernization-findings.md
+  notes: |
+    Engine and source schema have high confidence, but production version, size,
+    backups, drift and operational ownership are unverified. Q2 is the blocking
+    data probe. Unknown data gravity is not a small/medium assumption.
+    No database connection, query, migration or script execution was performed.
+
+integrations:
+  - name: sql-server
+    direction: bidirectional
+    protocol: TDS
+    criticality: high
+    evidence_confidence: high
+    guidance_path: .github\skills\integration-sql-server.md
+    evidence_paths:
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Context\ClaimStatementContext.cs
+      - RPA.ClaimStatements\RPA.ClaimStatements.Web\Security\RoleStore.cs
+      - RPA.ClaimStatements\RPA.ClaimStatements.FDMR\LoadExtract.sql
+    notes: |
+      EF6, bulk ingestion and role lookups; integrated-security configuration.
+      SQL-side exports have their own OS/identity boundary. High technical
+      dependency criticality is inferred, not a production SLA classification.
+  - name: winscp
+    direction: inbound
+    protocol: other
+    criticality: high
+    evidence_confidence: high
+    guidance_path: .github\skills\integration-winscp.md
+    evidence_paths:
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\PumpingStation\FTPService.cs
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\RPA.ClaimStatements.Generator.csproj
+    notes: |
+      Managed wrapper plus native Windows executable used by the FTP integration
+      below; not an additional remote endpoint. The legacy Imports copy is excluded.
+  - name: ftp
+    direction: inbound
+    protocol: FTP
+    criticality: high
+    evidence_confidence: high
+    guidance_path: .github\skills\integration-ftp.md
+    evidence_paths:
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\PumpingStation\FTPService.cs
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\PumpingStation\SITIImportService.cs
+    notes: |
+      SITI feed uses Protocol.Ftp in compiled code, not SFTP. No FTPS selection
+      was established. Confirm the deployed endpoint and transport controls
+      through approved evidence; do not contact it without consent.
+  - name: smtp
+    direction: outbound
+    protocol: SMTP
+    criticality: medium
+    evidence_confidence: high
+    guidance_path: .github\skills\integration-smtp.md
+    evidence_paths:
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\TrackingStation\EmailService.cs
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\App.config
+      - RPA.ClaimStatements\RPA.ClaimStatements.Web\App.config
+    notes: Network SMTP and pickup-directory modes are environment-dependent; delivery criticality needs owner confirmation.
+  - name: file-share
+    direction: bidirectional
+    protocol: other
+    criticality: high
+    evidence_confidence: medium
+    guidance_path: .github\skills\integration-file-share.md
+    evidence_paths:
+      - DAXAPFileTransfer.ps1
+      - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Services\FolderService.cs
+      - README.md
+    notes: |
+      Filesystem drops, local staging and Finance PDF archive; UNC/SMB behavior
+      is indicated, but production share protocol/permissions are unverified.
+      Preserve input filenames, archives, metadata, rendering assets and retrieval.
+  - name: active-directory
+    direction: bidirectional
+    protocol: other
+    criticality: high
+    evidence_confidence: high
+    guidance_path: .github\skills\integration-active-directory.md
+    evidence_paths:
+      - RPA.ClaimStatements\RPA.ClaimStatements.Web\Program.cs
+      - RPA.ClaimStatements\RPA.ClaimStatements.Web\Security\RoleStore.cs
+      - reports\Report-Status.md
+    notes: Windows Negotiate/IIS sign-in plus custom SQL roles; Entra ID availability does not approve a replacement design.
+
+identity:
+  current_provider: ad
+  target_provider: entra-id
+  evidence_confidence: high
+  evidence_paths:
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\Program.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\Security\RoleStore.cs
+    - reports\Report-Status.md
+  entra_id_available: true
+  notes: |
+    Source configures Windows Negotiate/IIS selection and custom SQL roles.
+    User selected Entra ID in D-09 on 2026-10-16. The target_provider value
+    describes interactive user authentication, not a workload-identity choice.
+    Actual production delegation, role mapping and user flows still need Q3.
+    Preserve authorization semantics; do not infer app registration or consent.
+    Entra interactive sign-in and Azure workload managed identity are separate.
+
+network:
+  on_prem_dependencies:
+    - Application SQL Server and separate role database.
+    - SITI transfer endpoint.
+    - DAX input files and Finance statement archive.
+    - SMTP relay or pickup-directory consumer.
+    - Directory services used by Windows-integrated access.
+  private_endpoints_needed: unknown
+  egress_constraints: unknown
+  evidence_confidence: low
+  evidence_paths:
+    - reports\Report-Status.md
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\Program.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\PumpingStation\FTPService.cs
+  azure_connectivity_reported: true
+  connection_type: unknown
+  notes: User answered yes to Azure connectivity; type, DNS, routes, firewalls, latency and service reachability require Q5.
+
+risk_flags:
+  - low-evidence-confidence
+
+compatibility:
+  requested_target: Azure Container Apps
+  ready_as_is: false
+  evidence_confidence: high
+  evidence_paths:
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\RPA.ClaimStatements.Generator.csproj
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\Turbine\TransformService.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\PumpingStation\FTPService.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Generator\Components\PowerPlant.cs
+    - RPA.ClaimStatements\RPA.ClaimStatements.Web\Program.cs
+    - https://learn.microsoft.com/en-us/azure/container-apps/containers
+  constraints:
+    - Container Apps requires Linux linux/amd64 images; Windows containers are not supported.
+    - System.Drawing.Common and native wkhtmltopdf.exe/WinSCP.exe need an approved Linux-compatible path.
+    - Windows-integrated sign-in and outbound integrated-security assumptions need a validated identity path.
+    - Machine-scoped generation mutexes cannot protect cross-replica execution.
+    - App-relative writable staging is not a durable archive or shared state store.
+    - Required DOCX templates exist locally but are ignored and absent from a clean Git checkout.
+    - Database-host xp_cmdshell/BCP export must be assessed independently of app hosting.
+    - Current PDF/XSLT/templates/fonts/images and output contracts require parity validation.
+  notes: These are application compatibility findings, not new canonical risk-flag values or approved replacement choices.
+
+compliance:
+  regulations:
+    - gdpr
+  residency_requirement: unknown
+  audit_logging_required: unknown
+  evidence_confidence: low
+  evidence_paths:
+    - reports\Report-Status.md
+  retention_requirement: unknown
+  encryption_requirement: unknown
+  notes: |
+    User initially answered unknown, then selected the GDPR/UK-GDPR option in
+    D-11 on 2026-10-16. Exact jurisdiction, residency, retention, audit and
+    encryption obligations remain unverified. Do not infer a UK-only region
+    or absence of other regulations; resolve Q4 with the data owner.
+
+operational:
+  rto: unknown
+  rpo: unknown
+  cutover_window: unknown
+  current_sla: unknown
+  evidence_confidence: low
+  evidence_paths:
+    - modernization-findings.md
+    - README.md
+  notes: Configuration names include SIT/UAT/Production, but this does not prove a currently usable test environment; resolve Q7.
+
+migration_strategy:
+  recommendation: refactor
+  recommendation_label: "\u26A0 Default guess"
+  evidence_confidence: medium
+  rationale: |
+    User priority is modernize. Current supported .NET stack, approximately
+    13,615 compiled first-party C# lines and existing NUnit tests support
+    Branch 5 refactoring rather than a ground-up rewrite or decomposition.
+    Runtime retargeting is already present; remaining work is compatibility,
+    identity, configuration, state, native dependencies and behavioral parity.
+    This is a provisional recommendation, not an approved architecture.
+    Q1 and Q2 are blocking evidence probes for deployment and data confidence;
+    Q4, Q9 and Q12 gate readiness for execution and acceptance.
+  decision_path:
+    - "Branch 1: no documented sunset or SaaS-only retention case; continue."
+    - "Branch 2: inspectable application source exists; no-source rehost does not apply."
+    - "Branch 3: .NET is supported; Windows-bound dependencies are target incompatibilities, not an unsupported source family."
+    - "Branch 4: speed-first not selected."
+    - "Branch 5: modernize, small compiled codebase and tests present; provisional Refactor."
+    - "Branches 6 and 7: cost-first and risk-first not selected."
+    - "Branch 8: webapp plus batch-job; no forced desktop/vendor/ETL override."
+    - "Branch 9: data volume unknown; defer gravity override until Q2; include Database Specialist now."
+    - "Branch 10: requested Container Apps is conditional; Jobs requires a separate approved batch boundary."
+    - "Branch 11: evaluate Rehost, Rebuild and Replatform rather than assume a rewrite."
+    - "Branch 12: named specialists cover app, data, identity, validation, deployment and recovery evidence."
+  alternatives_considered:
+    - alternative: rehost
+      rejected_because: Lowest-disruption fallback, but preserves Windows debt and does not satisfy the requested Container Apps target as-is.
+    - alternative: rebuild
+      rejected_because: Existing bounded codebase, domain logic, templates and tests support incremental preservation; no rewrite investment or parity scope approved.
+    - alternative: replatform
+      rejected_because: Hosting-only changes cannot remove native Windows, identity, file-state and concurrency constraints; targeted code refactoring is needed.
+  target_azure_candidates:
+    - service: Azure Container Apps
+      fit: medium
+      fit_notes: User-requested candidate; conditional on Linux/native/identity/state remediation and region/quota validation, not deployment-ready.
+    - service: Azure Container Apps Jobs
+      fit: medium
+      fit_notes: Candidate only for an explicitly approved independently packaged batch path; current web invokes generation in-process.
+    - service: Azure Virtual Machines
+      fit: medium
+      fit_notes: Windows-compatible fallback if required dependencies cannot be ported; user approval needed to depart from Container Apps.
+  notes: No SKU, region, database, identity, storage, registry, runtime-upgrade or microservice decision has been made.
+
+required_specialists:
+  - Architect
+  - Azure Specialist
+  - Coder
+  - Database Specialist
+  - Security Auditor
+  - Tester
+  - DevOps Engineer
+  - Observability Engineer
+  - Cutover Commander
+  - Scribe
+
+unresolved_questions:
+  - id: Q1
+    question: What production topology, OS, hosting, service accounts and deployment versions correspond to this repository?
+    impact: Source deployment confidence is low; repository behavior cannot prove running-server behavior.
+    recommended_probe: Obtain approved redacted deployment/service/IIS/task exports and match deployed artifacts to this revision without connecting to servers.
+  - id: Q2
+    question: What current SQL Server facts and externally provided Azure SQL Database schema, data, type and role/export contracts apply?
+    impact: Data confidence remains low; code adaptation requires the external team's interface contract. Source and target share the SQL Server engine family (superseded from an earlier same-day PostgreSQL selection — see Decisions-Required.md D-04), so engine-rewrite is not assumed, but Azure SQL Database PaaS constraints (no xp_cmdshell, no cross-database queries, no Windows-integrated auth) are not yet validated against this codebase's actual usage.
+    recommended_probe: Obtain redacted source metadata and the target team's schema/types/naming/test-fixture/authentication/export contract; no schema/data migration is in this code-only scope.
+  - id: Q3
+    question: What sign-in, SSO, user population, delegation and role-mapping behavior must be preserved?
+    impact: Entra ID is selected for sign-in, but role mapping, delegation and service identity are still unverified.
+    recommended_probe: Review role-to-action and principal mappings with the identity owner; document approved sign-in and outbound service-identity choices.
+  - id: Q4
+    question: Which exact GDPR/UK-GDPR obligations, other regulations, residency, retention, audit and encryption requirements apply?
+    impact: GDPR scope is selected, but compliance details remain low confidence and do not establish a permitted region or no audit.
+    recommended_probe: Obtain a data-owner/security-approved classification and policy statement before region/storage/retention decisions.
+  - id: Q5
+    question: Is Azure connectivity VPN or ExpressRoute, and which DNS, routes, ports and firewall policies are usable?
+    impact: Network confidence is low; reported connectivity does not establish service reachability or authorization.
+    recommended_probe: Obtain the network team's approved connectivity diagram and rule inventory; test endpoints only with explicit consent.
+  - id: Q6
+    question: What schedules, triggers, timezone, run volumes, durations and overlap rules govern generation and file transfer?
+    impact: Batch packaging and replica/concurrency decisions require the real run contract.
+    recommended_probe: Obtain task/scheduler exports and run summaries; document noninteractive arguments and concurrency requirements.
+  - id: Q7
+    question: What RTO, RPO, cutover window, SLA and usable nonproduction environment are required?
+    impact: Operational confidence is low; recovery, rollout and acceptance cannot be designed safely.
+    recommended_probe: Agree recovery and downtime objectives with operations and confirm an isolated rehearsal environment.
+  - id: Q8
+    question: Who owns master DOCX templates, fonts, images and their approved packaging/licensing source?
+    impact: Present-but-untracked templates cannot support a reproducible clean-checkout image build.
+    recommended_probe: Establish a controlled asset inventory, hashes, provenance and approved delivery mechanism without exposing claim documents.
+  - id: Q9
+    question: Which Linux-compatible PDF, transfer and drawing paths meet approved behavior, licensing and PDF-parity needs?
+    impact: Native Windows dependencies block the requested target as-is; no replacement choice is approved.
+    recommended_probe: Present lowest-disruption options and run approved isolated golden-document/transfer proofs after architecture decisions.
+  - id: Q10
+    question: Who is the accountable owner, what is production criticality, and who signs off user/business acceptance?
+    impact: Ownership, criticality and acceptance routing must not be guessed.
+    recommended_probe: Confirm named business/technical owners, user counts and acceptance criteria.
+  - id: Q11
+    question: Which Azure region, availability, quotas and budget constraints apply?
+    impact: Explicitly deferred outside current code-only scope; candidate services are not validated for deployment.
+    recommended_probe: Reopen before any future infrastructure or deployment work; obtain user choices and explicit subscription-scoped consent before Azure queries.
+  - id: Q12
+    question: What executable NUnit/PDF regression baseline, restore/CI readiness and PdfCompare tooling runtime can be established?
+    impact: Tests exist but have not run in discovery; output parity and reproducibility are not certified.
+    recommended_probe: Inspect test isolation, then run approved local tests and nonpersonal golden-PDF comparisons; record tooling Node version and dependency reproducibility.
+
+assumptions:
+  - assumption: Current source and tests are a useful modernization baseline, not proof of production equivalence.
+    impact_if_wrong: Reconcile deployment drift before estimating or changing behavior.
+  - assumption: Scope is targeted refactoring and preservation, not a microservices rewrite.
+    impact_if_wrong: Return to user-owned strategy and architecture decisions.
+  - assumption: Reported Azure connectivity can potentially support a transition.
+    impact_if_wrong: Network remediation or a different migration sequence will be needed.
+  - assumption: Local template assets can be obtained from an approved master source.
+    impact_if_wrong: Reproducible packaging and PDF-parity acceptance remain blocked.
+  - assumption: Existing test code is reusable after its dependencies and environment are validated.
+    impact_if_wrong: Establish missing coverage before behavioral changes.
+
+guidance:
+  integration_reference_format: Explicitly loaded flat reference files; not guaranteed standalone slash-command skills.
+  integration_references_version_control: Ignored by existing repository rules; present locally, not staged or committed.
+  evidence_paths:
+    - reports\Report-Status.md
+  notes: User approved all six guide files. No changes to the pre-existing dirty ignore configuration were made.
+
+planning_inputs:
+  submitted_date: '2026-10-16'
+  evidence_path: reports\Decisions-Required.md
+  rationale_status: User selections are explicit, but rationale fields remain unfilled; no rationale is inferred.
+  selected_runtime: Retain .NET 10.
+  selected_ui: Retain ASP.NET Core MVC.
+  selected_hosting: Azure Container Apps; Jobs only if demonstrably necessary alongside it, not automatic worker decomposition.
+  selected_authentication: Microsoft Entra ID.
+  selected_tenancy: Single-tenant.
+  selected_compliance_scope: GDPR/UK-GDPR option; detailed obligations unverified.
+  selected_cicd: Retain existing CI/CD; provider and configuration remain unspecified.
+  selected_observability: Azure Monitor and Application Insights.
+  selected_registry: Azure Container Registry.
+  target_database_preference: Azure SQL Database (superseded 2026-10-16 from an earlier same-day Azure PostgreSQL selection; see Decisions-Required.md D-04). External team owns the provisioned service and its configuration (SKU/tier, region, network, DR not selected here).
+  database_migration_scope_preference: No schema provisioning/conversion or data migration; user confirmed another team provides the target schema and data.
+  infrastructure_scope_preference: Explicitly deferred; code-only modernization, no IaC generation or deployment.
+  delivery_scope: code-only-modernization
+  schema_and_data_owner: External team, confirmed by user on 2026-10-16.
+  deferred_decisions:
+    - D-07
+    - D-08
+    - D-12
+    - D-13
+    - D-14
+    - D-15
+  notes: |
+    Current data.primary_datastore remains SQL Server: the target preference
+    (Azure SQL Database, same engine family — superseded 2026-10-16 from an
+    earlier same-day Azure PostgreSQL selection) does not rewrite source facts.
+    Do not assume an Azure SQL Database schema, transformed SQL exports or
+    migrated role data already exist, or that Azure SQL Database PaaS
+    constraints (no xp_cmdshell, no cross-database queries, no Windows-
+    integrated auth) have been validated against this codebase.
+    User confirmed code-only modernization and external schema/data ownership.
+    IaC, region, budget, recovery, cutover and downtime are deferred, not globally
+    N/A. No new CI/CD pipeline, resource provisioning or deployment is authorized.
+    Missing rationale fields remain unfilled; the explicit scope clarification
+    is recorded as such, not invented motivation for every individual selection.
+    Architecture approval and deployment readiness remain pending.
+
+handoff:
+  next_command: /build-migration-plan
+  main_path_next_command: /phase1-plan
+  next_lead: Architect
+  notes: |
+    Discovery is complete as an evidence snapshot, with twelve planning questions.
+    Follow the main path with /phase1-plan; /build-migration-plan is the skill's
+    explicit Architect-led handoff alternative. Keep Architect approval pending.
+    Phase 1 has received user selections and explicit code-only scope confirmation;
+    see Decisions-Required.md for authoritative statuses and deferred future phases.
+    Confirm production/data/compliance and native-dependency evidence before
+    implementation. No application code, Azure resource, or live data was changed.

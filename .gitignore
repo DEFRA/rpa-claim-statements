@@ -295,5 +295,7 @@ __pycache__/
 *.xml
 
 # MSFT Factory
-.github/prompts
+.github/copilot-instructions.md
 .github/skills
+.github/hooks
+.github/agents
