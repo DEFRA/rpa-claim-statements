@@ -39,7 +39,9 @@ SQL auth or an Entra ID/managed-identity token-based design), and an explicit sc
 runtime-applied EF6 migrations — each of which requires an explicit validation step before any Phase 2 code change
 proceeds. Region/budget/DR/cutover/downtime remain deferred; Phase 3–6 are not scheduled by this plan.
 
-**Verified baseline blocker:** On Windows x64 with SDK 10.0.401 / MSBuild 18.9.11, the no-restore build, restore, and build retry failed because the configured feed rejected `System.Management.Automation.dll` 10.0.10586 with HTTP 400/403. Both build attempts reported zero warnings and five errors. No successful compilation or test run was established; package/feed-owner approval is required for a remedy, not a policy bypass. See the [assessment](Application-Assessment-Report.md) for build evidence.
+**Temporary machine-specific validation limitation (user clarification, 2026-10-19):** The user reports that the package-feed restriction is specific to this machine, absent on another machine expected soon. Treat this as an environment limitation with build/test validation deferred, not a confirmed application defect or a requirement to change dependencies. Continue source analysis and other work that can be verified without execution, subject to the remaining contract/compatibility gates. Do not bypass feed controls or claim compilation/parity success. On the replacement machine, restore and build the unchanged source, run the applicable tests, and record actual results before closing this limitation. Availability and successful validation there remain unverified.
+
+**Historical baseline evidence:** On Windows x64 with SDK 10.0.401 / MSBuild 18.9.11, the no-restore build, restore, and build retry failed because the configured feed rejected `System.Management.Automation.dll` 10.0.10586 with HTTP 400/403. Both build attempts reported zero warnings and five errors. No successful compilation or test run was established. If restrictions persist on the replacement machine, obtain an approved access remedy rather than bypassing controls. See the [assessment](Application-Assessment-Report.md) for build evidence.
 
 ## 2. Approved Strategy
 
@@ -157,7 +159,7 @@ These always apply. Referenced, not duplicated, here.
 | A2 | Current source and tests are a useful modernization baseline, not proof of production equivalence (`Capability-Matrix.yaml#assumptions`) | Reconcile deployment drift before estimating or changing behavior | Coder / Architect, ongoing |
 | A3 | Reported Azure connectivity can potentially support a transition, but connection type/reachability is unverified (Q5) | Network remediation or a different migration sequence may be needed | Azure Specialist, before Phase 3 (deferred) |
 | A4 | Local DOCX/XSLT/font template assets can be obtained from an approved master source (Q8) | Reproducible packaging and PDF-parity acceptance remain blocked without this | Template/asset owner, before Phase 2 packaging work completes |
-| A5 | A green baseline build can be established once the `System.Management.Automation.dll` 10.0.10586 feed-access issue is resolved externally | Phase 2 work cannot be validated by build/test until this is resolved; this plan does not claim Linux/PG readiness from any build attempt | Package-feed owner, before Phase 2 validation work begins |
+| A5 | User reports the `System.Management.Automation.dll` 10.0.10586 feed restriction is temporary and machine-specific; a replacement machine without it is expected soon (2026-10-19), not yet verified | Continue independently verifiable work; build/test evidence remains deferred. Do not infer compilation, Linux or Azure SQL readiness. Close only after actual restore/build/test results on the replacement machine | User/environment owner supplies machine; migration implementer records validation; package-feed owner only if restriction persists |
 
 ## 10. Handoff to Migration-Orchestrator
 

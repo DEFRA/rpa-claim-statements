@@ -430,6 +430,42 @@ planning_inputs:
   infrastructure_scope_preference: Explicitly deferred; code-only modernization, no IaC generation or deployment.
   delivery_scope: code-only-modernization
   schema_and_data_owner: External team, confirmed by user on 2026-10-16.
+  target_schema_contract:
+    reported_date: '2026-10-19'
+    intended_shape: Same schema as the current SQL Server application, confirmed by user.
+    database_coverage:
+      - Main claim-statements database.
+      - Separate security/authorization database.
+    schema_available_to_user: true
+    repository_storage: Both main and security schemas are available privately; user states neither is safe for Git. Do not copy schema contents into reports or other tracked artifacts.
+    compatibility_verified: false
+    change_freeze: User confirms no EF6 migration or database schema changes until modernization/migration is complete; future schema-change governance will be planned afterward and is outside current scope.
+    migration_history_delivery: User confirmed on 2026-10-19 that the Azure SQL copy will include existing EF6 __MigrationHistory. This is a delivery commitment, not inspection of target rows or a successful pending-migration check.
+    runtime_migration_check: Existing startup migration execution remains source behavior; migration-history delivery confirmed. Verify history alignment and no pending migrations in the approved target test environment before execution that could write schema. No disabling/removal or schema-changing execution approved.
+    database_authentication: User confirmed on 2026-10-19 that managed identity will be used on Azure for both main and security databases; access provisioning is a delivery commitment, not verified grants.
+    managed_identity_details: System-assigned versus user-assigned identity, identifiers and least-privilege grants remain unspecified. No Azure resource queried or provisioned; no SQL token acquisition/provider compatibility proof yet.
+    remaining_contract: Confirm user identity-to-role lookup behavior and database-host export handling. Verify managed-identity SQL access and frozen-schema/migration-history alignment during target acceptance. Both database schemas are retained; future schema-change ownership is outside current scope.
+    database_host_export:
+      production_usage: unknown
+      user_response_date: '2026-10-19'
+      owner_and_replacement: unknown
+      contact_status: User confirms a contact is available; answer pending as of 2026-10-19. Contact identity not recorded.
+      response_tracking: modernization-findings.md consolidated checklist OWN-01; gather remaining owner questions together without waiting for this answer.
+      scope_of_block: Export-dependent implementation and end-to-end readiness; independent work may proceed if it does not assume the export is unused or replaced.
+      repository_trace_date: '2026-10-19'
+      trace_evidence: modernization-findings.md
+      fdmr_trace: SQL outbound export found; EF Extract mapping present, but no app-side procedure invocation, runtime mapped-set use or exported-file consumer found in searched application source. Production scheduler/recipient unknown.
+      crossborder_trace: SQL CSV exporter and active XB inbound CSV importer found; actual producer-consumer link inferred, not verified against runtime folder/mask or scheduler configuration.
+      owner_discussion_item: modernization-findings.md item 17.
+      next_probe: Owner confirms each export's production usage, scheduler, ownership, file contract and retained/external/replacement disposition. No SQL export or endpoint execution authorized.
+  build_validation_limitation:
+    status: temporary-machine-specific-validation-deferred
+    reported_date: '2026-10-19'
+    evidence_path: reports\Report-Status.md
+    user_report: Restriction is specific to this machine and absent on another machine expected soon.
+    independently_verified: false
+    next_action: Restore and build unchanged source and run applicable tests on the replacement machine; record actual results before closing.
+    interim_work: Continue independently verifiable work within remaining contract and compatibility gates; no feed-control bypass or dependency changes to evade restrictions.
   deferred_decisions:
     - D-07
     - D-08
