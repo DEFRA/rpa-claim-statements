@@ -1,11 +1,10 @@
-﻿using RPA.ClaimStatements.Generator.Models.Entities.CS;
+using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Text;
-using System.Threading.Tasks;
 using OfficeOpenXml;
 using RPA.ClaimStatements.Generator.Models.Entities.DAX;
 using System.Threading;

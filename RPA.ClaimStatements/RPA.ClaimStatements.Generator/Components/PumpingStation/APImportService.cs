@@ -1,4 +1,3 @@
-﻿using CsvHelper;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.DAX;
@@ -9,9 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
-using System.Threading.Tasks;
 using RPA.ClaimStatements.Generator.Components.PumpingStation.BulkInsert;
 using RPA.ClaimStatements.Generator.Components.PumpingStation.Serializer;
 

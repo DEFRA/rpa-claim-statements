@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RPA.ClaimStatements.Generator.Models.ClaimStatements
+﻿namespace RPA.ClaimStatements.Generator.Models.ClaimStatements
 {
     public class PartBXB : PartB
     {

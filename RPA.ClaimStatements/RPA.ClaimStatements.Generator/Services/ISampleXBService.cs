@@ -1,6 +1,4 @@
-﻿using RPA.ClaimStatements.Generator.Models.ClaimStatements;
-
-namespace RPA.ClaimStatements.Generator.Services
+﻿namespace RPA.ClaimStatements.Generator.Services
 {
     public interface ISampleXBService
     {

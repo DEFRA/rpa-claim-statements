@@ -3,82 +3,36 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>RPA.ClaimStatements.Generator</RootNamespace>
-    <AssemblyName>RPA.ClaimStatements.Generator</AssemblyName>
-    <Configurations>Debug;Release;Test;SIT;Production;UAT</Configurations>
-    <Platforms>AnyCPU</Platforms>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
-    <!-- FolderService.Root() resolves the working folders relative to bin\<Configuration>\, so keep that layout. -->
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <!-- CA1416: Windows-only by design (System.Drawing, WinSCP.exe, wkhtmltopdf). CS8981: EF migration class names are fixed. -->
-    <NoWarn>$(NoWarn);CA1416;CS8981</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Test' Or '$(Configuration)' == 'SIT'">
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-
-  <!-- These files exist on disk but were never part of the legacy build; keep them out, unchanged. -->
   <ItemGroup>
-    <Compile Remove="Imports\**" />
-    <Compile Remove="Services\BuildService.cs" />
-    <Compile Remove="Services\EmailService.cs" />
-    <Compile Remove="Services\IBuildService.cs" />
-    <Compile Remove="Services\IEmailService.cs" />
-    <Compile Remove="Services\IImportService.cs" />
-    <Compile Remove="Services\ILogService.cs" />
-    <Compile Remove="Services\ImportService.cs" />
-    <Compile Remove="Services\ITransformService.cs" />
-    <Compile Remove="Services\IValidationService.cs" />
-    <Compile Remove="Services\LogService.cs" />
-    <Compile Remove="Services\TransformService.cs" />
-    <Compile Remove="Services\ValidationService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.10.0" />
+    <PackageReference Include="OpenTelemetry" Version="1.21.0" />
     <PackageReference Include="CsvHelper" Version="2.16.3" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.7.2" />
-    <PackageReference Include="EntityFramework" Version="6.5.2" />
+    <!-- Minimum version required by Clippit 3.9.1. -->
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
     <PackageReference Include="EPPlus" Version="4.5.3.3" />
     <PackageReference Include="FastMember" Version="1.5.0" />
-    <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="4.0.50" PrivateAssets="all" />
+    <PackageReference Include="FluentFTP" Version="55.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.7" />
     <PackageReference Include="NBuilder" Version="6.1.0" />
-    <PackageReference Include="NReco.PdfGenerator" Version="1.2.1" />
-    <PackageReference Include="OpenXmlPowerTools" Version="4.5.3.2" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.12" />
-    <!-- Keep: without this pin EPPlus 4.5.3.3 resolves System.Drawing.Common 4.7.0 (critical advisory GHSA-rxg9-xrhp-64gj). -->
+    <PackageReference Include="Clippit" Version="3.9.1" />
+    <!-- Without this pin EPPlus 4.5.3.3 resolves System.Drawing.Common 4.7.0 (critical advisory GHSA-rxg9-xrhp-64gj). -->
     <PackageReference Include="System.Drawing.Common" Version="10.0.12" />
+    <!-- Raises the transitive Pkcs from Microsoft.Data.SqlClient above GHSA-846f-f764-76mx and GHSA-2fmv-rv2c-59x7. -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
     <PackageReference Include="Unity" Version="5.11.10" />
-    <PackageReference Include="WinSCP" Version="6.5.7" />
-    <!-- Only a transitive dependency of OpenXmlPowerTools; nothing in this code uses it. -->
-    <PackageReference Include="System.Management.Automation.dll" Version="10.0.10586" ExcludeAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Migrations\201802271513336_Initial.resx" DependentUpon="201802271513336_Initial.cs" />
-    <EmbeddedResource Update="Migrations\201809131222173_newXBfields.resx" DependentUpon="201809131222173_newXBfields.cs" />
-    <EmbeddedResource Update="Migrations\201809281014597_Statment3yrPenaltyNewFields.resx" DependentUpon="201809281014597_Statment3yrPenaltyNewFields.cs" />
-    <EmbeddedResource Update="Migrations\201810081307238_EFAonXB.resx" DependentUpon="201810081307238_EFAonXB.cs" />
-    <EmbeddedResource Update="Migrations\201810241520516_addedPrecision.resx" DependentUpon="201810241520516_addedPrecision.cs" />
-    <EmbeddedResource Update="Migrations\201811071553482_enitlmentsused4DP.resx" DependentUpon="201811071553482_enitlmentsused4DP.cs" />
-    <EmbeddedResource Update="Migrations\202009301028205_latechargepenaltyvalue.resx" DependentUpon="202009301028205_latechargepenaltyvalue.cs" />
-    <EmbeddedResource Update="Migrations\202010071329426_chargeToChange.resx" DependentUpon="202010071329426_chargeToChange.cs" />
-    <EmbeddedResource Update="Migrations\202012141337511_EnglandLatePenaltyChargeAdded.resx" DependentUpon="202012141337511_EnglandLatePenaltyChargeAdded.cs" />
-    <EmbeddedResource Update="Migrations\202108040919024_addPRTable.resx" DependentUpon="202108040919024_addPRTable.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="App.config" CopyToOutputDirectory="Always" TransformOnBuild="true" />
-    <None Update="App.Debug.config" CopyToOutputDirectory="Always" DependentUpon="App.config" IsTransformFile="true" />
-    <None Update="App.Production.config" CopyToOutputDirectory="Always" DependentUpon="App.config" IsTransformFile="true" />
-    <None Update="App.Release.config" CopyToOutputDirectory="Always" DependentUpon="App.config" IsTransformFile="true" />
-    <None Update="App.SIT.config" CopyToOutputDirectory="Always" DependentUpon="App.config" IsTransformFile="true" />
-    <None Update="App.UAT.config" CopyToOutputDirectory="Always" DependentUpon="App.config" IsTransformFile="true" />
-    <None Update="wkhtmltopdf\**" CopyToOutputDirectory="PreserveNewest" />
+    <InternalsVisibleTo Include="RPA.ClaimStatements.Generator.Tests" />
+    <Content Include="Rendering\render_pdf.py" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="XSLT\*.xslt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

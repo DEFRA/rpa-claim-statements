@@ -315,6 +315,14 @@ input[type="checkbox"].input-validation-error {
     }
 }
 
+@media(max-width:767px) {
+    .navbar-inverse .navbar-brand {
+        font-size: 20px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
 @media(max-width:400px) {
     .navbar-inverse .navbar-brand {
         font-size: 15px;

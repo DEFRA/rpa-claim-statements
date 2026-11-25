@@ -1,14 +1,9 @@
-﻿using Moq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using RPA.ClaimStatements.Generator.Components.Turbine;
 using RPA.ClaimStatements.Generator.Models.ClaimStatements;
 using RPA.ClaimStatements.Generator.Models.Exceptions;
-using RPA.ClaimStatements.Generator.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Tests.Components.Turbine
 {

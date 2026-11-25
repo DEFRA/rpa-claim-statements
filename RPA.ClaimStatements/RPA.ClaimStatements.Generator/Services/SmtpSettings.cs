@@ -1,111 +1,80 @@
-using System.Configuration;
+using System;
+using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 
 namespace RPA.ClaimStatements.Generator.Services
 {
-    // System.Net.Mail.SmtpClient only reads <system.net><mailSettings> on .NET Framework, so this section
-    // (declared in App.config) is read explicitly to keep the existing per-environment SMTP configuration.
-    public class SmtpSettingsSection : ConfigurationSection
+    // SMTP delivery for the tracking report, configured entirely through environment variables so each
+    // environment supplies its own relay (credentials come from the platform's secret store).
+    public sealed class SmtpSettings
     {
-        [ConfigurationProperty("deliveryMethod", DefaultValue = SmtpDeliveryMethod.Network)]
-        public SmtpDeliveryMethod DeliveryMethod
+        public const string HostVariable = "Smtp__Host";
+        public const string PortVariable = "Smtp__Port";
+        public const string EnableSslVariable = "Smtp__EnableSsl";
+        public const string UserNameVariable = "Smtp__UserName";
+        public const string PasswordVariable = "Smtp__Password";
+
+        public string Host { get; private set; }
+        public int Port { get; private set; }
+        public bool EnableSsl { get; private set; }
+        public string UserName { get; private set; }
+        public string Password { get; private set; }
+
+        public static SmtpSettings FromEnvironment()
         {
-            get { return (SmtpDeliveryMethod)this["deliveryMethod"]; }
+            return Parse(Environment.GetEnvironmentVariable);
         }
 
-        [ConfigurationProperty("network")]
-        public SmtpNetworkElement Network
+        public static SmtpSettings Parse(Func<string, string> getVariable)
         {
-            get { return (SmtpNetworkElement)this["network"]; }
-        }
-
-        [ConfigurationProperty("specifiedPickupDirectory")]
-        public SmtpPickupDirectoryElement SpecifiedPickupDirectory
-        {
-            get { return (SmtpPickupDirectoryElement)this["specifiedPickupDirectory"]; }
-        }
-
-        public static SmtpClient CreateClient()
-        {
-            var client = new SmtpClient();
-            var section = ConfigurationManager.GetSection("system.net/mailSettings/smtp") as SmtpSettingsSection;
-
-            if (section == null)
+            string host = getVariable(HostVariable);
+            if (string.IsNullOrWhiteSpace(host))
             {
-                return client;
+                throw new InvalidOperationException(HostVariable + " is not set or is blank. Supply the SMTP server host name.");
             }
 
-            client.DeliveryMethod = section.DeliveryMethod;
-
-            if (section.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
+            int port = 25;
+            string portValue = getVariable(PortVariable);
+            if (!string.IsNullOrWhiteSpace(portValue)
+                && (!int.TryParse(portValue, NumberStyles.None, CultureInfo.InvariantCulture, out port) || port < 1 || port > 65535))
             {
-                client.PickupDirectoryLocation = section.SpecifiedPickupDirectory.PickupDirectoryLocation;
+                throw new InvalidOperationException(PortVariable + " must be a port number between 1 and 65535.");
             }
-            else
+
+            bool enableSsl = false;
+            string sslValue = getVariable(EnableSslVariable);
+            if (!string.IsNullOrWhiteSpace(sslValue) && !bool.TryParse(sslValue, out enableSsl))
             {
-                var network = section.Network;
+                throw new InvalidOperationException(EnableSslVariable + " must be true or false.");
+            }
 
-                client.Host = network.Host;
-                client.Port = network.Port;
-                client.EnableSsl = network.EnableSsl;
-                client.UseDefaultCredentials = network.DefaultCredentials;
+            string userName = getVariable(UserNameVariable);
+            if (!string.IsNullOrEmpty(userName) && !enableSsl)
+            {
+                throw new InvalidOperationException(UserNameVariable + " requires " + EnableSslVariable + "=true so credentials are not sent unencrypted.");
+            }
 
-                if (!string.IsNullOrEmpty(network.UserName))
-                {
-                    client.Credentials = new NetworkCredential(network.UserName, network.Password);
-                }
+            return new SmtpSettings
+            {
+                Host = host.Trim(),
+                Port = port,
+                EnableSsl = enableSsl,
+                UserName = userName,
+                Password = getVariable(PasswordVariable)
+            };
+        }
+
+        public SmtpClient CreateClient()
+        {
+            var client = new SmtpClient(Host, Port) { EnableSsl = EnableSsl };
+
+            if (!string.IsNullOrEmpty(UserName))
+            {
+                client.Credentials = new NetworkCredential(UserName, Password);
             }
 
             return client;
-        }
-    }
-
-    public class SmtpNetworkElement : ConfigurationElement
-    {
-        [ConfigurationProperty("host")]
-        public string Host
-        {
-            get { return (string)this["host"]; }
-        }
-
-        [ConfigurationProperty("port", DefaultValue = 25)]
-        public int Port
-        {
-            get { return (int)this["port"]; }
-        }
-
-        [ConfigurationProperty("userName")]
-        public string UserName
-        {
-            get { return (string)this["userName"]; }
-        }
-
-        [ConfigurationProperty("password")]
-        public string Password
-        {
-            get { return (string)this["password"]; }
-        }
-
-        [ConfigurationProperty("defaultCredentials", DefaultValue = false)]
-        public bool DefaultCredentials
-        {
-            get { return (bool)this["defaultCredentials"]; }
-        }
-
-        [ConfigurationProperty("enableSsl", DefaultValue = false)]
-        public bool EnableSsl
-        {
-            get { return (bool)this["enableSsl"]; }
-        }
-    }
-
-    public class SmtpPickupDirectoryElement : ConfigurationElement
-    {
-        [ConfigurationProperty("pickupDirectoryLocation")]
-        public string PickupDirectoryLocation
-        {
-            get { return (string)this["pickupDirectoryLocation"]; }
         }
     }
 }

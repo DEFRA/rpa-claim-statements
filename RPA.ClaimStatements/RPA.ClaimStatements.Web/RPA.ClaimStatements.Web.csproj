@@ -2,23 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>RPA.ClaimStatements.Web</RootNamespace>
-    <AssemblyName>RPA.ClaimStatements.Web</AssemblyName>
-    <Configurations>Debug;Release;Test;SIT;Production;UAT</Configurations>
-    <Platforms>AnyCPU</Platforms>
-    <ApplicationIcon>wwwroot\images\Icon.ico</ApplicationIcon>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <!-- The d2vm* folders are historical deployment copies, not part of this project. -->
-    <DefaultItemExcludes>$(DefaultItemExcludes);d2vmba001\**;d2vmbwa001\**</DefaultItemExcludes>
-    <!-- CA1416: Windows-only by design (the Generator uses System.Drawing, WinSCP.exe and wkhtmltopdf). -->
-    <NoWarn>$(NoWarn);CA1416</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Test' Or '$(Configuration)' == 'SIT'">
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
+    <UserSecretsId>ac70e006-7a2e-4588-9605-4f320ec66dec</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,37 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="10.0.13" />
-    <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="4.0.50" PrivateAssets="all" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.5" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.6.5" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.16.1" />
     <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="10.6.0" />
-  </ItemGroup>
-
-  <!-- ARController was never part of the legacy build; it stays in git, unchanged. -->
-  <ItemGroup>
-    <Compile Remove="Controllers\ARController.cs" />
-  </ItemGroup>
-
-  <!-- Configuration: App.config + per-configuration transforms become RPA.ClaimStatements.Web.dll.config (read by the Generator through ConfigurationManager). -->
-  <ItemGroup>
-    <Content Remove="App.config;App.*.config;compilerconfig.json;compilerconfig.json.defaults" />
-    <None Include="compilerconfig.json;compilerconfig.json.defaults" />
-    <None Include="App.config" TransformOnBuild="true" />
-    <None Include="App.Debug.config" DependentUpon="App.config" IsTransformFile="true" />
-    <None Include="App.Production.config" DependentUpon="App.config" IsTransformFile="true" />
-    <None Include="App.Release.config" DependentUpon="App.config" IsTransformFile="true" />
-    <None Include="App.SIT.config" DependentUpon="App.config" IsTransformFile="true" />
-    <None Include="App.UAT.config" DependentUpon="App.config" IsTransformFile="true" />
-  </ItemGroup>
-
-  <!-- Working folders and the Generator's templates/XSLT must exist beside the binaries (FolderService.Root() is the host's base directory). -->
-  <ItemGroup>
-    <Content Include="DOCX\Temp.txt;HTML\Temp.txt;XML\Temp.txt;XSLT\Temp.txt;Templates\Temp.txt;Uploads\Temp.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="..\RPA.ClaimStatements.Generator\XSLT\ClaimXSLT.xslt" Link="XSLT\ClaimXSLT.xslt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="..\RPA.ClaimStatements.Generator\XSLT\ClaimXSLTXB.xslt" Link="XSLT\ClaimXSLTXB.xslt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="..\RPA.ClaimStatements.Generator\Templates\ClaimTemplate.docx" Link="Templates\ClaimTemplate.docx" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="..\RPA.ClaimStatements.Generator\Templates\ClaimTemplateXB.docx" Link="Templates\ClaimTemplateXB.docx" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

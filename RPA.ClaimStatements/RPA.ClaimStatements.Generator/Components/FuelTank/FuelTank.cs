@@ -1,4 +1,4 @@
-﻿using RPA.ClaimStatements.Generator.Context;
+using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.DAX;
 using RPA.ClaimStatements.Generator.Models.Entities.SITI;
@@ -9,9 +9,7 @@ using RPA.ClaimStatements.Generator.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace RPA.ClaimStatements.Generator.Components.FuelTank
 {
@@ -279,14 +277,9 @@ namespace RPA.ClaimStatements.Generator.Components.FuelTank
 
             XBData xbData;
 
-            if (dbFunctions)
-            {
-                xbData = db.XBData.AsNoTracking().Where(x => x.InvoiceNumber == invoiceTransformed && x.FRN == frn && x.SchemeYear == schemeYear && DbFunctions.TruncateTime(x.CalculationDate) <= settlementDate).OrderByDescending(x => x.CalculationDate).FirstOrDefault();
-            }
-            else
-            {
-                xbData = db.XBData.AsNoTracking().Where(x => x.InvoiceNumber == invoiceTransformed && x.FRN == frn && x.SchemeYear == schemeYear && x.CalculationDate.Date <= settlementDate).OrderByDescending(x => x.CalculationDate).FirstOrDefault();
-            }
+            // DbFunctions.TruncateTime has no EF Core equivalent; `.Date` is translated server-side by the SQL Server
+            // provider. The `dbFunctions` parameter is kept for call-site compatibility.
+            xbData = db.XBData.AsNoTracking().Where(x => x.InvoiceNumber == invoiceTransformed && x.FRN == frn && x.SchemeYear == schemeYear && x.CalculationDate.Date <= settlementDate).OrderByDescending(x => x.CalculationDate).FirstOrDefault();
 
             return xbData;
         }
@@ -341,14 +334,7 @@ namespace RPA.ClaimStatements.Generator.Components.FuelTank
 
                     invoiceTransformed = conversionService.TransformInvoice(invoice, "XB");
 
-                    if (dbFunctions)
-                    {
-                        xbData = db.XBData.AsNoTracking().Where(x => x.InvoiceNumber == invoiceTransformed && x.FRN == frn && x.SchemeYear == schemeYear && DbFunctions.TruncateTime(x.CalculationDate) <= invoiceDate).OrderByDescending(x => x.CalculationDate).FirstOrDefault();
-                    }
-                    else
-                    {
-                        xbData = db.XBData.AsNoTracking().Where(x => x.InvoiceNumber == invoiceTransformed && x.FRN == frn && x.SchemeYear == schemeYear && x.CalculationDate.Date <= invoiceDate).OrderByDescending(x => x.CalculationDate).FirstOrDefault();
-                    }
+                    xbData = db.XBData.AsNoTracking().Where(x => x.InvoiceNumber == invoiceTransformed && x.FRN == frn && x.SchemeYear == schemeYear && x.CalculationDate.Date <= invoiceDate).OrderByDescending(x => x.CalculationDate).FirstOrDefault();
 
                     if (xbData != null)
                     {

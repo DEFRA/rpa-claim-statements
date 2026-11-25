@@ -1,12 +1,4 @@
-﻿using RPA.ClaimStatements.Generator.Context;
-using RPA.ClaimStatements.Generator.Models.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RPA.ClaimStatements.Generator.Services
+﻿namespace RPA.ClaimStatements.Generator.Services
 {
     public class YCPService : IYCPService
     {

@@ -1,11 +1,8 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Components.PumpingStation.Serializer
 {

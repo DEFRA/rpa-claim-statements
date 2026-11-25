@@ -5,12 +5,8 @@ using RPA.ClaimStatements.Generator.Models.Generation;
 using RPA.ClaimStatements.Generator.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Xml;
-using System.Collections.Concurrent;
 
 namespace RPA.ClaimStatements.Generator.Components.Turbine
 {

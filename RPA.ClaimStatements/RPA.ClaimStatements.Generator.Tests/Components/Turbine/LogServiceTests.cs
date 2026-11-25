@@ -1,16 +1,14 @@
-﻿using Moq;
+using Moq;
 using NUnit.Framework;
 using RPA.ClaimStatements.Generator.Components.Turbine;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.DAX;
-using RPA.ClaimStatements.Generator.Services;
+using RPA.ClaimStatements.Generator.Tests.TestSupport;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Tests.Components.Turbine
 {
@@ -43,7 +41,7 @@ namespace RPA.ClaimStatements.Generator.Tests.Components.Turbine
             mockARSet = new Mock<DbSet<AR>>().SetupData(arData);
             mockARSet.Setup(x => x.Find(It.IsAny<object>())).Returns(arData.FirstOrDefault());
 
-            mockContext = new Mock<ClaimStatementsContext>();
+            mockContext = new Mock<ClaimStatementsContext>(ClaimStatementsContextTestFactory.CreateSyntheticOptions());
             mockContext.Setup(x => x.Log).Returns(mockLogSet.Object);
             mockContext.Setup(x => x.AP).Returns(mockAPSet.Object);
             mockContext.Setup(x => x.AR).Returns(mockARSet.Object);

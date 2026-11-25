@@ -1,0 +1,3 @@
+# These are Razor source pages, not generated log output.
+!Log/
+!Log/**

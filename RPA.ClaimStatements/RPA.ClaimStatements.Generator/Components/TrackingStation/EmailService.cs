@@ -1,11 +1,7 @@
 ﻿using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Components.TrackingStation
 {
@@ -46,7 +42,7 @@ namespace RPA.ClaimStatements.Generator.Components.TrackingStation
             message.From = new MailAddress(email);
             message.To.Add(new MailAddress(email));
 
-            SmtpClient client = SmtpSettingsSection.CreateClient();
+            SmtpClient client = SmtpSettings.FromEnvironment().CreateClient();
             client.Send(message);
         }
 

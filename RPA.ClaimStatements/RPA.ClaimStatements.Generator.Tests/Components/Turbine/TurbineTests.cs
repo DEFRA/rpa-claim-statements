@@ -1,20 +1,13 @@
-﻿using Moq;
+using Moq;
 using NUnit.Framework;
-using RPA.ClaimStatements.Generator.Components.FuelTank;
 using RPA.ClaimStatements.Generator.Components.Turbine;
-using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.ClaimStatements;
-using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.SITI;
 using RPA.ClaimStatements.Generator.Models.Entities.XB;
 using RPA.ClaimStatements.Generator.Models.Generation;
 using RPA.ClaimStatements.Generator.Services;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Tests.Components.Turbine
 {   

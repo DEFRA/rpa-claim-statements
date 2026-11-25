@@ -1,20 +1,17 @@
-﻿using RPA.ClaimStatements.Generator.Context;
+using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.XB;
-using RPA.ClaimStatements.Generator.Extensions;
 using RPA.ClaimStatements.Generator.Components.PumpingStation.BulkInsert;
 using RPA.ClaimStatements.Generator.Components.PumpingStation.Maps;
 using RPA.ClaimStatements.Generator.Components.PumpingStation.Serializer;
-using RPA.ClaimStatements.Generator.Models.Enums;
 using RPA.ClaimStatements.Generator.Services;
 using RPA.ClaimStatements.Generator.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Components.PumpingStation
 {

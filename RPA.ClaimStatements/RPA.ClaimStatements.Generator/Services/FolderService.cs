@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
-using System.Reflection;
 using RPA.ClaimStatements.Generator.Context;
-using System.Web;
-
 namespace RPA.ClaimStatements.Generator.Services
 {
     public class FolderService : IFolderService, IDisposable
     {
         IClaimStatementsContext db;
-        
+
+        // Absolute path of the folder that holds the working subfolders (Templates, XML, DOCX, HTML, PDF, Uploads).
+        // Required: there is no fallback.
+        public const string RootEnvironmentVariableName = "CLAIMSTATEMENTS_ROOT";
+
         public FolderService(IClaimStatementsContext context)
         {
             this.db = context;
@@ -26,7 +25,6 @@ namespace RPA.ClaimStatements.Generator.Services
             Directory.CreateDirectory(Path.Combine(Root(), "DOCX"));
             Directory.CreateDirectory(Path.Combine(Root(), "HTML"));
             Directory.CreateDirectory(Path.Combine(Root(), "PDF"));
-            Directory.CreateDirectory(Path.Combine(Root(), "XSLT"));
             Directory.CreateDirectory(Path.Combine(Root(), "Templates"));
         }
 
@@ -41,8 +39,37 @@ namespace RPA.ClaimStatements.Generator.Services
         }
 
         public string Root()
-        {            
-            return HostEnvironment.IsWebHosted ? AppDomain.CurrentDomain.BaseDirectory : Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).Parent.FullName;           
+        {
+            return ResolveRoot(Environment.GetEnvironmentVariable(RootEnvironmentVariableName));
+        }
+
+        // Pure resolver kept separate from Root() so it can be unit tested without setting a
+        // process-wide environment variable.
+        public static string ResolveRoot(string configuredRoot)
+        {
+            if (string.IsNullOrWhiteSpace(configuredRoot))
+            {
+                throw new InvalidOperationException(string.Format(
+                    "{0} is not set or is blank. Set it to the absolute path of the folder that holds the working folders.",
+                    RootEnvironmentVariableName));
+            }
+
+            string trimmed = configuredRoot.Trim();
+
+            // Path.IsPathFullyQualified rejects drive-relative/rooted-but-relative paths (e.g. "/data"
+            // on Windows, "C:data" anywhere) as well as plain relative paths, so a misconfigured value
+            // fails visibly instead of being silently resolved against an unpredictable current
+            // working directory.
+            if (!Path.IsPathFullyQualified(trimmed))
+            {
+                throw new InvalidOperationException(string.Format(
+                    "{0} must be an absolute path for the current OS; '{1}' is not. Relative or drive-relative paths are rejected rather than silently resolved.",
+                    RootEnvironmentVariableName, configuredRoot));
+            }
+
+            // Normalises separators and a trailing separator (cross-platform; root paths such as
+            // "C:\" or "/" are left intact) without touching the filesystem.
+            return Path.GetFullPath(Path.TrimEndingDirectorySeparator(trimmed));
         }
 
         private bool disposedValue = false;

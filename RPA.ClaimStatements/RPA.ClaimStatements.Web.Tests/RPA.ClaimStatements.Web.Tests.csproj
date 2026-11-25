@@ -2,28 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>RPA.ClaimStatements.Web.Tests</RootNamespace>
-    <AssemblyName>RPA.ClaimStatements.Web.Tests</AssemblyName>
-    <Configurations>Debug;Release;Test;SIT;Production;UAT</Configurations>
-    <Platforms>AnyCPU</Platforms>
     <IsPackable>false</IsPackable>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Test' Or '$(Configuration)' == 'SIT'">
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-
-  <!-- ARControllerTests was never part of the legacy test build; it stays in git, unchanged. -->
   <ItemGroup>
-    <Compile Remove="Controllers\ARControllerTests.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.13" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NUnit" Version="3.14.0" />
@@ -31,6 +16,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="10.0.13" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\RPA.ClaimStatements.Web\wwwroot\Scripts\jquery-1.10.2.js" Link="wwwroot\Scripts\jquery-1.10.2.js" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\RPA.ClaimStatements.Web\wwwroot\Content\bootstrap.css;..\RPA.ClaimStatements.Web\wwwroot\Content\bootstrap-theme.css;..\RPA.ClaimStatements.Web\wwwroot\Content\Site.css" Link="wwwroot\Content\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\RPA.ClaimStatements.Web\wwwroot\fonts\glyphicons-halflings-regular.eot;..\RPA.ClaimStatements.Web\wwwroot\fonts\glyphicons-halflings-regular.svg;..\RPA.ClaimStatements.Web\wwwroot\fonts\glyphicons-halflings-regular.ttf;..\RPA.ClaimStatements.Web\wwwroot\fonts\glyphicons-halflings-regular.woff" Link="wwwroot\fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <ProjectReference Include="..\RPA.ClaimStatements.Generator\RPA.ClaimStatements.Generator.csproj" />
     <ProjectReference Include="..\RPA.ClaimStatements.Web\RPA.ClaimStatements.Web.csproj" />
   </ItemGroup>

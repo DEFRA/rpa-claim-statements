@@ -1,13 +1,11 @@
-﻿using FizzWare.NBuilder;
+﻿using Microsoft.EntityFrameworkCore;
+using FizzWare.NBuilder;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.SITI;
 using RPA.ClaimStatements.Generator.Models.ClaimStatements;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using RPA.ClaimStatements.Generator.Components.Turbine;
 

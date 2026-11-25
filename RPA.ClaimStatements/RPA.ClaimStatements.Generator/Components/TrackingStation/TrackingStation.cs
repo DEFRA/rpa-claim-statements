@@ -1,13 +1,10 @@
-﻿using RPA.ClaimStatements.Generator.Context;
+using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
-using RPA.ClaimStatements.Generator.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using HtmlTextWriter = RPA.ClaimStatements.Generator.Components.TrackingStation.ReportHtmlWriter;
 using HtmlTextWriterTag = RPA.ClaimStatements.Generator.Components.TrackingStation.ReportHtmlWriter.Tag;
 

@@ -1,16 +1,15 @@
-﻿using RPA.ClaimStatements.Generator.Components.FuelTank;
+﻿using Microsoft.EntityFrameworkCore;
+using RPA.ClaimStatements.Generator.Components.FuelTank;
 using RPA.ClaimStatements.Generator.Components.PumpingStation;
 using RPA.ClaimStatements.Generator.Components.TrackingStation;
 using RPA.ClaimStatements.Generator.Components.Turbine;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Services;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Components
 {
@@ -39,11 +38,29 @@ namespace RPA.ClaimStatements.Generator.Components
 
         public void Activate(string statementType, int maximumBatchSize = 0)
         {
+            using var activity = ApplicationTelemetry.Source.StartActivity("ClaimStatements.Run");
+            activity?.SetTag("statement.type", statementType);
+            activity?.SetTag("batch.maximum", maximumBatchSize);
+            try
+            {
+                ActivateCore(statementType, maximumBatchSize);
+                activity?.SetStatus(ActivityStatusCode.Ok);
+            }
+            catch (Exception error)
+            {
+                activity?.SetTag("error.type", error.GetType().FullName);
+                activity?.SetStatus(ActivityStatusCode.Error);
+                throw;
+            }
+        }
+
+        private void ActivateCore(string statementType, int maximumBatchSize)
+        {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Power Plant activated");
             Console.ResetColor();
 
-            RunMigrations();
+            EnsureSchemaContract();
 
             pumpingStation.Activate();
 
@@ -90,11 +107,28 @@ namespace RPA.ClaimStatements.Generator.Components
             Console.ResetColor();
         }
 
-        private void RunMigrations()
+        /// <summary>
+        /// Fails visibly, before any work starts, when the database is unreachable or its schema is
+        /// behind the migrations in this build. It never creates or migrates anything: deployed
+        /// environments apply the EF migration bundle, and a developer machine can opt in through
+        /// SchemaMigrations.
+        /// </summary>
+        private void EnsureSchemaContract()
         {
-            var configuration = new Migrations.Configuration();
-            var migrator = new DbMigrator(configuration);
-            migrator.Update();
+            if (!db.CanConnect())
+            {
+                throw new InvalidOperationException(
+                    "ClaimStatementsContext could not connect to the configured database. Verify the " +
+                    "'ClaimStatementsContext' connection string/managed identity and that the database exists.");
+            }
+
+            var pending = db.GetPendingMigrations()?.ToList();
+            if (pending != null && pending.Count > 0)
+            {
+                throw new InvalidOperationException(
+                    "The database schema is behind this version of the application. Pending migrations: " +
+                    string.Join(", ", pending) + ". Apply the EF migration bundle before starting the application.");
+            }
         }
     }
 }

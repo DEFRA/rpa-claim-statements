@@ -1,14 +1,11 @@
-﻿using Moq;
+using Moq;
 using NUnit.Framework;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Services;
-using System;
+using RPA.ClaimStatements.Generator.Tests.TestSupport;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace RPA.ClaimStatements.Generator.Tests.Services
 {
@@ -27,7 +24,7 @@ namespace RPA.ClaimStatements.Generator.Tests.Services
 
             mockErrorSet = new Mock<DbSet<Error>>().SetupData(data);
 
-            mockContext = new Mock<ClaimStatementsContext>();
+            mockContext = new Mock<ClaimStatementsContext>(ClaimStatementsContextTestFactory.CreateSyntheticOptions());
             mockContext.Setup(x => x.Errors).Returns(mockErrorSet.Object);
 
             service = new ErrorService(mockContext.Object);

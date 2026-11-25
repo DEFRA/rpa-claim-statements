@@ -2,38 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>RPA.ClaimStatements.Generator.Tests</RootNamespace>
-    <AssemblyName>RPA.ClaimStatements.Generator.Tests</AssemblyName>
-    <Configurations>Debug;Release;Test;SIT;Production;UAT</Configurations>
-    <Platforms>AnyCPU</Platforms>
     <IsPackable>false</IsPackable>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <!-- CA1416: Windows-only by design (the Generator uses System.Drawing, WinSCP.exe and wkhtmltopdf). -->
-    <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Test' Or '$(Configuration)' == 'SIT'">
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-
-  <!-- These files exist on disk but were never part of the legacy test build; keep them out, unchanged. -->
   <ItemGroup>
-    <Compile Remove="Services\GenerationServiceTests.cs" />
-    <Compile Remove="Services\ImportServiceTests.cs" />
-    <Compile Remove="Services\LoadServiceTests.cs" />
-    <Compile Remove="Services\LogServiceTests.cs" />
-    <Compile Remove="Services\ValidationServiceTests.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="EntityFrameworkTesting.Moq" Version="1.3.0" />
+    <!-- LINQ-to-Objects-backed DbSet<T> test double: not a proof of SQL translation. -->
+    <PackageReference Include="MockQueryable.Moq" Version="7.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="PdfPig" Version="0.1.16" />
   </ItemGroup>
 
   <ItemGroup>

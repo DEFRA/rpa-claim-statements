@@ -1,104 +1,54 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
-using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Server.IIS;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using RPA.ClaimStatements.Generator;
+using RPA.ClaimStatements.Generator.Services;
 using RPA.ClaimStatements.Web;
-using RPA.ClaimStatements.Web.Filters;
+using RPA.ClaimStatements.Web.Extensions;
 using RPA.ClaimStatements.Web.Security;
+using RPA.ClaimStatements.Web.Pages;
 using Unity.Microsoft.DependencyInjection;
 
-// The Generator resolves its connection strings, EF configuration and SMTP settings through
-// ConfigurationManager. Pin it to this application's own configuration file, whichever process hosts it.
-AppContext.SetData("APP_CONFIG_FILE", Path.Combine(AppContext.BaseDirectory, "RPA.ClaimStatements.Web.dll.config"));
-
-// FolderService.Root() uses the host's base directory when web hosted.
-HostEnvironment.IsWebHosted = true;
+// Fail fast at startup rather than on the first database or file access.
+StartupChecks.EnsureReady();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddClaimStatementsTelemetry(builder.Configuration);
 
-// Keep the existing Unity registrations (UnityConfig.RegisterTypes) as the service provider.
+builder.Services.AddClaimStatementsDataProtection(builder.Configuration);
+
+// The Generator's services are registered in the existing Unity container, which acts as the service provider.
 builder.Host.UseUnityServiceProvider(UnityConfig.Container);
 
-builder.Services
-    .AddControllersWithViews(options => options.Filters.Add<HandleErrorFilter>())
-    // Clients read the JSON property names as written (PascalCase), e.g. data.Ok.
-    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null)
-    .AddControllersAsServices();
+builder.Services.AddOperatorPages();
 
-// Windows authentication: IIS authenticates the request when hosted in-process by IIS,
-// Kestrel negotiates it itself (local development and console hosting).
-builder.Services
-    .AddAuthentication("WindowsOrNegotiate")
-    .AddPolicyScheme("WindowsOrNegotiate", "Windows authentication", options =>
-        options.ForwardDefaultSelector = context =>
-            context.RequestServices.GetRequiredService<IServer>().GetType().Name == "IISHttpServer"
-                ? IISServerDefaults.AuthenticationScheme
-                : NegotiateDefaults.AuthenticationScheme)
-    .AddNegotiate();
+// Entra ID sign-in (single tenant, authorization-code flow with PKCE, cookie session). The tenant,
+// client and credential values come from environment variables, with secrets injected from Key Vault.
+builder.Services.AddClaimStatementsEntraAuthentication(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    // A signed-in user without the required role gets a plain 403. The default would redirect to an
+    // access-denied page that does not exist in this application.
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+});
 
 builder.Services.AddAuthorization();
 
-// Roles come from the Security database for Identity.Name, as the legacy roleManager provided them.
-builder.Services.AddSingleton<IRoleStore>(_ =>
-{
-    ConnectionStringSettings security = ConfigurationManager.ConnectionStrings["IDTSecurityConnection"]
-        ?? throw new InvalidOperationException("Connection string 'IDTSecurityConnection' is not configured.");
-    string applicationName = ConfigurationManager.AppSettings["IDTSecurityApplicationName"]
-        ?? throw new InvalidOperationException("App setting 'IDTSecurityApplicationName' is not configured.");
-
-    return new SecurityDatabaseRoleStore(security.ConnectionString, applicationName);
-});
-builder.Services.AddTransient<IClaimsTransformation, RoleManagerClaimsTransformation>();
+// Maps Entra ID app-role claims to the permission names used by the [Authorize(Roles = "...")]
+// attributes and User.IsInRole(...) checks (see Security/AppRolePermissionMap.cs).
+builder.Services.AddTransient<IClaimsTransformation, AppRolePermissionsClaimsTransformation>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-}
+app.UseOperatorRequestPipeline();
 
-// globalization culture="en-GB" uiCulture="en-GB": fixed, not negotiated from the client.
-var culture = new CultureInfo("en-GB");
-app.UseRequestLocalization(new RequestLocalizationOptions
-{
-    DefaultRequestCulture = new RequestCulture(culture),
-    SupportedCultures = new List<CultureInfo> { culture },
-    SupportedUICultures = new List<CultureInfo> { culture },
-    RequestCultureProviders = new List<IRequestCultureProvider>()
-});
-
-app.UseAuthentication();
-
-// <deny users="?" />: nothing, static files included, is served to an anonymous user.
-app.Use(async (context, next) =>
-{
-    if (context.User.Identity?.IsAuthenticated != true)
-    {
-        await context.ChallengeAsync();
-        return;
-    }
-
-    await next();
-});
-
-app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "Default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapOperatorPages();
 
 app.Run();

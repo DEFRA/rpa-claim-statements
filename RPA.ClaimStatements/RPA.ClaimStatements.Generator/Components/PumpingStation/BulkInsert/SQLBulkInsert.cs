@@ -1,12 +1,10 @@
-﻿using FastMember;
+using FastMember;
 using RPA.ClaimStatements.Generator.Context;
+using RPA.ClaimStatements.Generator.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Components.PumpingStation.BulkInsert
 {
@@ -18,7 +16,7 @@ namespace RPA.ClaimStatements.Generator.Components.PumpingStation.BulkInsert
         public SQLBulkInsert(IClaimStatementsContext context)
         {
             this.db = context;
-            this.connStr = ConfigurationManager.ConnectionStrings["ClaimStatementsContext"].ConnectionString;
+            this.connStr = ClaimStatementsConnectionString.Resolve();
         }
         
         public void Insert(List<T> obj, string table, List<string> columnMappings = null)

@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.DAX;
 using RPA.ClaimStatements.Generator.Models.Entities.FDMR;
@@ -38,5 +39,16 @@ namespace RPA.ClaimStatements.Generator.Context
         int SaveChanges();
         void Dispose();
         void SetModified(object entity);
+
+        /// <summary>
+        /// Connectivity check (EF Core DatabaseFacade.CanConnect() under the hood). Creates and
+        /// migrates nothing.
+        /// </summary>
+        bool CanConnect();
+
+        /// <summary>
+        /// Names of the EF Core migrations not yet applied to the connected database.
+        /// </summary>
+        IEnumerable<string> GetPendingMigrations();
     }
 }

@@ -3,8 +3,6 @@ using RPA.ClaimStatements.Generator.Models.Entities.XB;
 using RPA.ClaimStatements.Generator.Models.ClaimStatements;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace RPA.ClaimStatements.Generator.Models.Generation
 {

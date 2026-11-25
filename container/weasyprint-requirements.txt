@@ -1,0 +1,2 @@
+# Hash of the official v70.0 GitHub source archive, not the PyPI wheel/sdist.
+weasyprint==70.0 --hash=sha256:dd3e50a83d8e21a80c1271fdd16cb4c234d96e03906971aea41e3f1b82c49b74

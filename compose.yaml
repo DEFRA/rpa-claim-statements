@@ -1,0 +1,64 @@
+# Local test rig for the Web application and PDF generation. It builds the same Dockerfile targets
+# that are deployed to Azure Container Apps; nothing in this file is used on Azure.
+#
+#   Web:       docker compose --env-file <private env file> up --build web
+#   Generator: docker compose --env-file <private env file> run --rm --build generator BPS 1
+#
+# Settings come from one private env file kept outside Git (template: container/web.env.example).
+x-app-environment: &app-environment
+  ConnectionStrings__ClaimStatementsContext: ${ConnectionStrings__ClaimStatementsContext:?Supply the local SQL connection string}
+  APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
+  Smtp__Host: ${Smtp__Host:-}
+  Smtp__Port: ${Smtp__Port:-}
+  Smtp__EnableSsl: ${Smtp__EnableSsl:-}
+  Smtp__UserName: ${Smtp__UserName:-}
+  Smtp__Password: ${Smtp__Password:-}
+
+# The database CS.Folders paths must be the container paths on the right.
+x-app-volumes: &app-volumes
+  - type: bind
+    source: ${CLAIMSTATEMENTS_TEMPLATES_DIRECTORY:?Supply the directory with ClaimTemplate.docx and ClaimTemplateXB.docx}
+    target: /var/lib/claimstatements/work/Templates
+    read_only: true
+    bind:
+      create_host_path: false
+  - type: bind
+    source: ${CLAIMSTATEMENTS_PDF_ARCHIVE_DIRECTORY:?Supply the local PDF archive directory}
+    target: /var/lib/claimstatements/archive
+    bind:
+      create_host_path: false
+  - type: bind
+    source: ${CLAIMSTATEMENTS_PDF_OUTBOUND_DIRECTORY:?Supply the local PDF outbound directory}
+    target: /var/lib/claimstatements/outbound
+    bind:
+      create_host_path: false
+
+services:
+  web:
+    build:
+      context: .
+      target: production
+      args:
+        NUGET_SOURCE: ${NUGET_SOURCE:-}
+    ports:
+      - "127.0.0.1:${CLAIMSTATEMENTS_WEB_PORT:-64158}:8080"
+    environment:
+      <<: *app-environment
+      AzureAd__Instance: https://login.microsoftonline.com/
+      AzureAd__TenantId: ${CLAIMSTATEMENTS_TENANT_ID:?Supply the single tenant ID}
+      AzureAd__ClientId: ${CLAIMSTATEMENTS_CLIENT_ID:?Supply the web application ID}
+      AzureAd__CallbackPath: /signin-oidc
+      AzureAd__SignedOutCallbackPath: /signout-callback-oidc
+      AzureAd__ClientCredentials__0__SourceType: ClientSecret
+      AzureAd__ClientCredentials__0__ClientSecret: ${CLAIMSTATEMENTS_CLIENT_SECRET:?Supply the Entra client secret}
+    volumes: *app-volumes
+
+  generator:
+    profiles: [generator]
+    build:
+      context: .
+      target: generator
+      args:
+        NUGET_SOURCE: ${NUGET_SOURCE:-}
+    environment: *app-environment
+    volumes: *app-volumes

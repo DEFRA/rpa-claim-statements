@@ -1,12 +1,7 @@
 ﻿using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
-using RPA.ClaimStatements.Generator.Models.Entities.DAX;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Components.Turbine
 {

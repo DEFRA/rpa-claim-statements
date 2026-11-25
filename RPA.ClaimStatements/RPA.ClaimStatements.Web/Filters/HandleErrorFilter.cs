@@ -10,7 +10,7 @@ namespace RPA.ClaimStatements.Web.Filters
 {
     /// <summary>
     /// Replaces the global HandleErrorAttribute together with customErrors mode="RemoteOnly":
-    /// unhandled action exceptions from remote requests render Views/Shared/Error; local
+    /// unhandled page-handler exceptions from remote requests render Pages/Shared/Error; local
     /// requests are left unhandled so the host reports the detail.
     /// </summary>
     public sealed class HandleErrorFilter : IExceptionFilter
@@ -35,7 +35,7 @@ namespace RPA.ClaimStatements.Web.Filters
 
             context.Result = new ViewResult
             {
-                ViewName = "Error",
+                ViewName = "/Pages/Shared/Error.cshtml",
                 StatusCode = StatusCodes.Status500InternalServerError,
                 ViewData = new ViewDataDictionary(metadataProvider, context.ModelState)
             };

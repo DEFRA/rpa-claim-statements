@@ -1,6 +1,5 @@
-﻿using Moq;
+using Moq;
 using NUnit.Framework;
-using RPA.ClaimStatements.Generator.Components.FuelTank;
 using RPA.ClaimStatements.Generator.Context;
 using RPA.ClaimStatements.Generator.Models.Entities.CS;
 using RPA.ClaimStatements.Generator.Models.Entities.DAX;
@@ -8,12 +7,11 @@ using RPA.ClaimStatements.Generator.Models.Entities.SITI;
 using RPA.ClaimStatements.Generator.Models.Entities.XB;
 using RPA.ClaimStatements.Generator.Models.Generation;
 using RPA.ClaimStatements.Generator.Services;
+using RPA.ClaimStatements.Generator.Tests.TestSupport;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RPA.ClaimStatements.Generator.Tests.Components.FuelTank
 {
@@ -54,7 +52,7 @@ namespace RPA.ClaimStatements.Generator.Tests.Components.FuelTank
         [SetUp]
         public void Setup()
         {
-            mockContext = new Mock<ClaimStatementsContext>();
+            mockContext = new Mock<ClaimStatementsContext>(ClaimStatementsContextTestFactory.CreateSyntheticOptions());
             configurationService = new Mock<IConfigurationService>();
             errorService = new Mock<IErrorService>();
             monitorService = new Mock<IMonitorService>();
