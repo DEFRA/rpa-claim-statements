@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": null },
+    "sqlLocation": { "value": null },
+    "prefix": { "value": null },
+    "environmentName": { "value": null },
+    "tags": { "value": { "application": null, "environment": null, "owner": null, "costCentre": null } },
+    "acaSubnetResourceId": { "value": null },
+    "privateEndpointSubnetResourceId": { "value": null },
+    "privateDnsZoneResourceIds": {
+      "value": { "sql": null, "vault": null, "blob": null, "registry": null }
+    },
+    "serviceDnsLinks": {
+      "value": {
+        "sql": { "mode": "Existing", "name": null },
+        "vault": { "mode": "Existing", "name": null },
+        "registry": { "mode": "Existing", "name": null }
+      }
+    },
+    "monitoring": {
+      "value": {
+        "logRetentionDays": null,
+        "applicationInsightsRetentionDays": null
+      }
+    },
+    "monitoringAmpls": {
+      "value": { "mode": "Create", "associationOwner": "Project" }
+    },
+    "monitoringPrivateEndpoint": {
+      "value": { "mode": "Create" }
+    },
+    "monitoringPrivateDns": {
+      "value": {
+        "monitor": { "zone": { "mode": "Create" }, "link": { "mode": "Create", "name": null }, "zoneGroupOwner": "Project" },
+        "oms": { "zone": { "mode": "Create" }, "link": { "mode": "Create", "name": null }, "zoneGroupOwner": "Project" },
+        "ods": { "zone": { "mode": "Create" }, "link": { "mode": "Create", "name": null }, "zoneGroupOwner": "Project" },
+        "agentsvc": { "zone": { "mode": "Create" }, "link": { "mode": "Create", "name": null }, "zoneGroupOwner": "Project" },
+        "blobLink": { "mode": "Existing", "name": null }
+      }
+    },
+    "zoneRedundant": { "value": null },
+    "acaEnvironmentTags": {
+      "value": {
+        "Created By": null,
+        "Created On": null,
+        "Customer": null,
+        "email-id": null,
+        "Offering": null,
+        "Purpose": null,
+        "Region": null,
+        "Resourcegroupneedtagname": null,
+        "tower": null
+      }
+    },
+    "keyRingStorageSku": { "value": null },
+    "blobSoftDeleteDays": { "value": null },
+    "vaultSoftDeleteDays": { "value": null },
+    "database": {
+      "value": {
+        "name": null,
+        "administratorName": null,
+        "administratorObjectId": null,
+        "administratorPrincipalType": null,
+        "maxVcores": null,
+        "minVcores": null,
+        "maxSizeGiB": null,
+        "backupRedundancy": null,
+        "pointInTimeRetentionDays": null,
+        "longTermRetention": {
+          "weeklyRetention": null,
+          "monthlyRetention": null,
+          "yearlyRetention": null,
+          "weekOfYear": null
+        }
+      }
+    }
+  }
+}

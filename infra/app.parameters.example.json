@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": null },
+    "prefix": { "value": null },
+    "environmentName": { "value": null },
+    "tags": { "value": { "application": null, "environment": null, "owner": null, "costCentre": null } },
+    "databaseName": { "value": null },
+    "images": {
+      "value": { "webRepository": null, "webDigest": null, "generatorRepository": null, "generatorDigest": null }
+    },
+    "entra": { "value": { "tenantId": null, "clientId": null, "clientSecretName": null } },
+    "fileShares": {
+      "value": {
+        "templates": { "registrationName": null, "accountName": null, "shareName": null, "accountKeySecretName": null, "mountPath": "/var/lib/claimstatements/work/Templates" },
+        "data": { "registrationName": null, "accountName": null, "shareName": null, "accountKeySecretName": null, "mountPath": null },
+        "pdfArchive": { "registrationName": null, "accountName": null, "shareName": null, "accountKeySecretName": null, "mountPath": null },
+        "pdfOutbound": { "registrationName": null, "accountName": null, "shareName": null, "accountKeySecretName": null, "mountPath": null }
+      }
+    },
+    "webSize": { "value": null },
+    "generatorSize": { "value": null },
+    "trustedIngressConfirmed": { "value": null },
+    "nonOverlapControlsConfirmed": { "value": null },
+    "statementType": { "value": null },
+    "maximumBatchSize": { "value": null },
+    "jobTimeoutSeconds": { "value": null },
+    "terminationGracePeriodSeconds": { "value": null },
+    "smtp": { "value": { "host": null, "port": null, "enableSsl": null, "userName": null, "passwordSecretName": null } }
+  }
+}
