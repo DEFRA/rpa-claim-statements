@@ -13,11 +13,12 @@ Start with the README for [build and test commands](../README.md#build-and-test)
 |---|---|---|
 | Runtime | .NET 10, Linux containers on the DEFRA Alpine parent image; also runs on Windows. | Deploy a rebuilt image, not files copied to a server. Do not rely on Windows services, the registry or a persistent local filesystem. |
 | Web UI | ASP.NET Core Razor Pages with the original routes (`/`, `/Home`, `/Error`, `/Log`, `/Configuration`, `/Suppression`). | Change page models and `.cshtml` files together; do not add a parallel MVC workflow. |
-| Configuration | Environment variables only. | No `App.config`, transforms or SlowCheetah. Add a setting as an environment variable with a validating class, as `SmtpSettings` does. |
+| Configuration | Environment variables only. | No `App.config`, transforms or SlowCheetah. Add a setting as an environment variable with a validating class, as `MailSettings` does. |
 | Data access | EF Core with migrations. | The schema is managed by migrations; see [Database schema and migrations](#database-schema-and-migrations). |
 | Authentication | Entra ID through Microsoft.Identity.Web with an authentication cookie; app roles map to the original permission names. | The `Security` database and Windows authentication are gone. See [Authentication and roles](#authentication-and-roles). |
 | PDF output | A Python script runs WeasyPrint 70.0 once per statement. | Replaces wkhtmltopdf and Chromium. See [The PDF pipeline](#the-pdf-pipeline). |
 | Telemetry and keys | Azure Monitor OpenTelemetry and shared Data Protection keys, through an explicit user-assigned managed identity. | Neither falls back to developer credentials. |
+| Tracking mail | Microsoft Graph `sendMail` with a raw `HttpClient` and the managed identity (Azure.Identity). | No Graph SDK and no SMTP. Off unless `Mail__Enabled=true`, so local runs send nothing. The sender and recipient are the `Email Account` value in `CS.Configuration`. See the [operator guide](./operator-guide.md#tracking-mail-platform-prerequisites). |
 
 ## Where to work
 
@@ -34,7 +35,7 @@ Paths are relative to `RPA.ClaimStatements`:
 | `Generator/Components/Turbine` | Statement generation: XML, XSLT, DOCX, HTML and PDF (`TransformService`), validation and logging. |
 | `Generator/Components/TrackingStation` | The tracking report and its e-mail. |
 | `Generator/Context` | `ClaimStatementsContext`, the EF mappings and `Migrations`. |
-| `Generator/Services` | Configuration, folders, files, dates, currency, errors and the settings classes (`SmtpSettings`, `TelemetrySettings`, `ClaimStatementsConnectionString`). |
+| `Generator/Services` | Configuration, folders, files, dates, currency, errors and the settings classes (`MailSettings`, `TelemetrySettings`, `ClaimStatementsConnectionString`). |
 | `Generator/Rendering/render_pdf.py` | The WeasyPrint renderer. |
 | `Generator/XSLT` | The XML to Word transformations, published next to the binaries. |
 | `RPA.ClaimStatements.Web/Program.cs` | Startup and service registration. |
@@ -180,7 +181,7 @@ multi-tenant `TenantId`.
   the container image or on a machine with WeasyPrint before changing the renderer.
 - **Not covered by tests or verification:** a real SQL Server (collation, precision, concurrency), a real Entra
   sign-in, Azure resources, the Azure Monitor and Data Protection integrations against real services, FTP against the
-  partner server, and PDF parity with the original output.
+  partner server, live Graph/Exchange mail delivery, and PDF parity with the original output.
 - **Keep the suite small.** Test our own behaviour: business rules, the authorization matrix, binding and
   anti-forgery, startup validation, the PDF pipeline. Do not add tests for framework or library behaviour (path
   normalisation, static files, token validation), markup details, or counts of model members; the migrations are the

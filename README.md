@@ -48,7 +48,8 @@ needs (feature switches, folders, transformations, conversion rates, scheme year
 |---|---|
 | `ConnectionStrings__ClaimStatementsContext` | Required SQL Server connection string. Use `Authentication=Active Directory Managed Identity;User Id=<client id>` in Azure; supply credentials only as a secret. Missing or invalid values stop both applications at startup, without echoing the value. |
 | `CLAIMSTATEMENTS_ROOT` | Required absolute path of the working folder that holds `Templates`, `XML`, `DOCX`, `HTML`, `PDF` and `Uploads`. A missing, blank or relative value stops startup. The images set `/var/lib/claimstatements/work`. |
-| `Smtp__Host`, `Smtp__Port`, `Smtp__EnableSsl`, `Smtp__UserName`, `Smtp__Password` | Optional SMTP relay for the tracking report e-mail. Port defaults to 25. `Smtp__EnableSsl` must be `true` when credentials are supplied. A failure to send is logged and does not stop the run. |
+| `Mail__Enabled` | Sends the tracking report through Microsoft Graph. Defaults to `false` when unset; any other value must be `true` or `false`. |
+| `Mail__ManagedIdentityClientId` | Client ID (GUID) of the user-assigned managed identity that sends the mail. Required when mail is enabled; attach it to both the Web app and the Generator job. The sender mailbox and recipient are the `Email Account` value in `CS.Configuration`. See the [operator guide](./docs/operator-guide.md#tracking-mail-platform-prerequisites). |
 | `AzureAd__TenantId`, `AzureAd__ClientId` | Web only. Required. The tenant must be this organisation's tenant GUID, not `common`, `organizations` or `consumers`. |
 | `AzureAd__ClientCredentials__0__SourceType`, `AzureAd__ClientCredentials__0__ClientSecret` | Web only. The credential for the confidential client, for example `ClientSecret` plus a Key Vault secret reference. |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | Optional. Telemetry is off unless it is set. `ApplicationInsights__ConnectionString` is the alternative; the former wins. |
@@ -103,7 +104,7 @@ dotnet RPA.ClaimStatements.Generator.dll I        # imports only
 - Exit code **0** means the processing call returned normally, not that every statement succeeded: check the
   application error and log records and the outputs.
 - Each run imports SITI (managed FTP), XB, DAX AP and DAX AR files, generates statements (only when `Generation`
-  is `Active`), publishes the PDFs and sends the tracking report. Mutexes give per-host coordination only, not
+  is `Active`), publishes the PDFs and reports tracking results (mail is optional and off by default). Mutexes give per-host coordination only, not
   exclusion across container replicas or jobs.
 
 ## Run locally
@@ -118,6 +119,7 @@ dotnet RPA.ClaimStatements.Generator.dll I        # imports only
    ```powershell
    $env:ConnectionStrings__ClaimStatementsContext = 'Server=.\SQLEXPRESS;Database=<database>;Integrated Security=True;Encrypt=True;TrustServerCertificate=True'
    $env:CLAIMSTATEMENTS_ROOT = 'C:\csg\work'
+   $env:Mail__Enabled = 'false'
    ```
 
    Put the approved `ClaimTemplate.docx` and `ClaimTemplateXB.docx` in `C:\csg\work\Templates`.
@@ -156,6 +158,7 @@ docker compose --env-file <private env file> run --rm --build generator BPS 1
 - A SQL Server on the host is reachable through `host.docker.internal`. Windows integrated authentication does not
   work from a Linux container; use a SQL login.
 - Set `NUGET_SOURCE` in the env file if nuget.org is not reachable from the build machine.
+- Keep `Mail__Enabled=false` locally; Compose and the env example expose only the two `Mail__*` variables.
 - Rendering changes only need `--build`; the WeasyPrint layers stay cached. `docker compose down` removes the
   containers and the container-local working folder.
 
@@ -204,11 +207,13 @@ production. See the [operator guide](./docs/operator-guide.md) for the runbook.
 - **Storage:** the code uses ordinary file paths. Mount persistent storage at the `CS.Folders` paths (archive,
   outbound, imports) and read-only at `$CLAIMSTATEMENTS_ROOT/Templates`; the database owner sets the production
   `CS.Folders.Path` values to the mount paths. Mounts must be writable by UID/GID 1000. The working folder
-  (`XML`, `DOCX`, `HTML`, `PDF`, `Uploads`) can stay on the container filesystem. The final PDF destination is a share
-  outside the RPA tenant, so cross-tenant access is arranged by the platform and database owners.
+  (`XML`, `DOCX`, `HTML`, `PDF`, `Uploads`) can stay on the container filesystem. The final PDF destination may be an
+  existing share owned by another team; the platform and database owners arrange mount access.
 - **Shared keys and telemetry:** configure `DataProtection__*` and, optionally, the telemetry settings above.
 - **Generator:** run as a job with the arguments `BPS N`, `XB N`, `ALL N` or `I`. Do not run overlapping jobs.
-- **Secrets:** inject the SQL credentials (if any), client credential and SMTP password from Key Vault as secrets.
+- **Mail:** keep `Mail__Enabled=false` until the [Exchange and platform prerequisites](./docs/operator-guide.md#tracking-mail-platform-prerequisites)
+  are met. Graph uses the managed identity and needs no mail secret.
+- **Secrets:** inject the SQL credentials (if any) and client credential from Key Vault as secrets.
   Never put them in the image, the repository or build arguments.
 
 ## Troubleshooting
@@ -218,6 +223,7 @@ production. See the [operator guide](./docs/operator-guide.md) for the runbook.
 | Startup fails naming a missing setting | `ConnectionStrings__ClaimStatementsContext`, `CLAIMSTATEMENTS_ROOT` and the `AzureAd__*` values are required. |
 | Startup reports pending migrations or an unreachable database | Check the connection string and network, then the migration state (developer guide). |
 | Web fails at startup with `DataProtection` errors | Check the settings, the Blob and Key Vault URIs and the identity's roles. A leftover `DataProtection__KeyDirectory` is rejected. |
+| Tracking mail not sent or not received | Check `Mail__Enabled` and, when enabled, `Mail__ManagedIdentityClientId`, the identity's attachment to the app or job, and the Exchange authorization. A bad `Mail__*` value does not stop startup; it appears as a warning at the end of the run. HTTP 202 means accepted, not delivered. |
 | Redirect loop, `http` callback URL or Entra redirect mismatch | Check forwarded headers, the registered redirect URIs and the external hostname. |
 | HTTP 403 after sign-in | The user has no matching Entra app role (see the operator guide). |
 | PDF rendering failed (exit code, timeout) | Check Python and WeasyPrint, the HTML and the template images; each statement has a 60-second limit. The Generator logs the failure per statement. |

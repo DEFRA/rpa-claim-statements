@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using HtmlTextWriter = RPA.ClaimStatements.Generator.Components.TrackingStation.ReportHtmlWriter;
 using HtmlTextWriterTag = RPA.ClaimStatements.Generator.Components.TrackingStation.ReportHtmlWriter.Tag;
 
@@ -43,8 +44,9 @@ namespace RPA.ClaimStatements.Generator.Components.TrackingStation
             }
             catch (Exception ex)
             {
+                Activity.Current?.AddException(ex);
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Tracking Station offline - {0}", ex.Message);
+                Console.Error.WriteLine("Tracking Station offline - {0}", ex.Message);
                 Console.ResetColor();
             }
         }

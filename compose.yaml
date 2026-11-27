@@ -8,11 +8,8 @@
 x-app-environment: &app-environment
   ConnectionStrings__ClaimStatementsContext: ${ConnectionStrings__ClaimStatementsContext:?Supply the local SQL connection string}
   APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-  Smtp__Host: ${Smtp__Host:-}
-  Smtp__Port: ${Smtp__Port:-}
-  Smtp__EnableSsl: ${Smtp__EnableSsl:-}
-  Smtp__UserName: ${Smtp__UserName:-}
-  Smtp__Password: ${Smtp__Password:-}
+  Mail__Enabled: ${Mail__Enabled:-false}
+  Mail__ManagedIdentityClientId: ${Mail__ManagedIdentityClientId:-}
 
 # The database CS.Folders paths must be the container paths on the right.
 x-app-volumes: &app-volumes

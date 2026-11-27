@@ -45,7 +45,29 @@ Two images are built from one Dockerfile (see the README): the Web application (
 | Key Vault secrets | ACA resolves Key Vault secret references through its configured identity. Do not pass unresolved vault URLs as settings. The application itself does not read Key Vault secrets. |
 | Data Protection | The UAMI named in `DataProtection__ManagedIdentityClientId` has Storage Blob Data Contributor on the key-ring container and Key Vault Crypto User on the key. |
 | Telemetry | The UAMI named in `Telemetry__ManagedIdentityClientId` has Monitoring Metrics Publisher on Application Insights. Without it, connection-string-only ingestion needs local authentication enabled. |
-| Final PDF destination | The share is outside the RPA tenant. The platform and database owners arrange cross-tenant access, and UID/GID 1000 must be able to write to it. |
+| Tracking mail | `Mail__ManagedIdentityClientId` is the client ID of a UAMI attached to **both the Web app and the Generator job**. It needs scoped permission to send as one mailbox; see below. |
+| Final PDF destination | May be an existing share owned by another team. Platform and database owners arrange mount access; UID/GID 1000 must be able to write. |
+
+### Tracking mail platform prerequisites
+
+Keep `Mail__Enabled=false` until the platform and Exchange owners have provided and verified:
+
+1. **A mailbox in Exchange Online.** The `Email Account` value in `CS.Configuration` is both sender and recipient.
+2. **The managed identity** attached to the Web app and the Generator job (not only to the ACA environment).
+   `Mail__ManagedIdentityClientId` is its client ID, not its object or resource ID. There is no fallback to
+   developer credentials.
+3. **Network:** outbound HTTPS to `graph.microsoft.com`.
+4. **Permission limited to that one mailbox.** Use Exchange Online RBAC for Applications with the identity's service
+   principal and the Application Mail.Send role scoped to the mailbox. Do not also grant an unscoped Graph `Mail.Send`
+   in Entra: independent grants add up and are not limited by the RBAC scope. Exchange administrators should test that
+   sending as the approved mailbox works and sending as another mailbox is refused.
+5. **Classification and retention.** The report contains FRNs and error messages. `saveToSentItems` is false, but the
+   recipient's mailbox still keeps the message.
+
+Behaviour to know: a send has a 30-second limit and is not retried. Graph answering HTTP 202 means the message was
+accepted, not delivered. A failed send writes a warning to the console and to telemetry; the run continues and the
+exit code does not change. With `Mail__Enabled` unset or `false`, nothing is sent and nothing is logged as an error.
+To check delivery, use a test mailbox; a live send needs separate approval.
 
 ### Storage
 
@@ -112,8 +134,8 @@ Entra portal. Never paste tokens, authorization codes or credentials into ticket
 6. Accept the Web application: sign in, check that each role sees the right pages, and that sessions survive a
    restart, a new revision and a second replica (shared keys).
 7. Run the Generator job manually with a small batch (for example `BPS 1`) and check: exit code, the application
-   error and log tables, the generated PDFs in the outbound and archive folders, the tracking report e-mail and the
-   cleanup of the working folders.
+   error and log tables, the generated PDFs in the outbound and archive folders, and cleanup of the working folders.
+   If mail is enabled, check the tracking report arrives in the test mailbox (HTTP 202 alone is not proof).
 8. Have the owners review real statements for every supplied template variant against the original output. This
    acceptance has not been done.
 9. Review the logs, telemetry ingestion and alerts you intend to rely on.
@@ -134,6 +156,7 @@ Entra portal. Never paste tokens, authorization codes or credentials into ticket
 | Statements are missing or errors accumulate | Check the application error and log tables, the `Generation` and `Validation` switches in `CS.Configuration`, and the PDF renderer messages (a statement that fails to render does not stop the run). |
 | PDF rendering fails or times out | Memory and CPU limits on the job, the template images (BMP and WMF are rejected) and the 60-second per-statement limit. |
 | PDF output looks different from the original | Fonts and layout differ from the old renderer; compare against real statements (developer guide). |
+| Tracking mail not sent or not received | Check `Mail__Enabled` and, when enabled, `Mail__ManagedIdentityClientId`, the identity's attachment to the app or job, and the Exchange authorization. A bad `Mail__*` value does not stop startup; it appears as a warning at the end of the run. HTTP 202 means accepted, not delivered. |
 
 Telemetry is best effort and not an audit store; the database error and log records remain authoritative.
 
@@ -159,12 +182,14 @@ Telemetry is best effort and not an audit store; the database error and log reco
 
 ## Secret and key maintenance
 
-- **Client credential, SQL credentials and SMTP password:** rotate them in Key Vault and refresh the container app
+- **Client credential and SQL credentials:** rotate them in Key Vault and refresh the container app
   revision so the new values are injected. Allow overlap where the provider supports it.
 - **Data Protection key-ring wrapping key:** keep every Key Vault key version that was used to wrap the ring, so
   existing cookies and keys can still be decrypted. Never delete the key-ring blob. There is no local or unencrypted
   fallback; access failures stop the Web application at startup.
 - **Managed identities:** keep the roles listed in the checklist on the same identities that the settings name.
+- **Mail:** no mail secret. Exchange owners maintain the one-mailbox authorization; platform owners maintain
+  retention of the report.
 - **Package and image patches:** rebuild and scan the images regularly. WeasyPrint, Python and Alpine packages are
   patched through the image, separately from NuGet auditing.
 
@@ -178,4 +203,6 @@ Telemetry is best effort and not an audit store; the database error and log reco
 - [Add app roles to an application (Microsoft Entra)](https://learn.microsoft.com/entra/identity-platform/howto-add-app-roles-in-apps)
 - [Configure ASP.NET Core to work with proxy servers and load balancers](https://learn.microsoft.com/aspnet/core/host-and-deploy/proxy-load-balancer)
 - [Enable Azure Monitor OpenTelemetry](https://learn.microsoft.com/azure/azure-monitor/app/opentelemetry-enable)
+- [Microsoft Graph sendMail](https://learn.microsoft.com/graph/api/user-sendmail)
+- [Exchange Online RBAC for Applications](https://learn.microsoft.com/exchange/permissions-exo/application-rbac)
 - [DEFRA .NET parent image](https://github.com/DEFRA/defra-docker-dotnetcore)
