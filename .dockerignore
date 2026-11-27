@@ -1,0 +1,15 @@
+**
+!Dockerfile
+!dev-entrypoint.sh
+!RPA.ClaimStatements/RPA.ClaimStatements.Generator/**
+!RPA.ClaimStatements/RPA.ClaimStatements.Web/**
+!RPA.ClaimStatements/RPA.ClaimStatements.Web.Tests/**
+**/bin/
+**/obj/
+**/*.user
+**/*.pfx
+**/*.pem
+**/*.key
+**/.env*
+**/secrets.json
+**/appsettings.Development.json
